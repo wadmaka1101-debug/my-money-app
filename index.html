@@ -11,7 +11,7 @@
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&family=M+PLUS+Rounded+1c:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <script>
         tailwind.config = {
@@ -53,11 +53,12 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            transition: background-color 0.3s ease;
         }
         .content-area {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 90px; /* Space for bottom nav */
+            padding-bottom: 120px; /* Space for bottom nav and extra scroll */
         }
         
         /* Custom Toggle Switch */
@@ -93,11 +94,20 @@
             from { transform: translateX(-50%) translateY(0); opacity: 1; }
             to { transform: translateX(-50%) translateY(100px); opacity: 0; }
         }
+        
+        /* カラーピッカー用 */
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
 <body class="text-gray-800 antialiased selection:bg-primary selection:text-white">
 
-    <div class="app-container">
+    <div class="app-container" id="app-container">
         
         <!-- Header -->
         <header class="bg-white pt-6 pb-4 px-6 sticky top-0 z-20 flex justify-between items-center shadow-sm">
@@ -121,10 +131,10 @@
             </div>
 
             <!-- Summary Card -->
-            <div class="bg-gradient-to-br from-primary to-purple-600 rounded-3xl p-6 text-white shadow-xl shadow-primary/30 mb-8 relative overflow-hidden">
+            <div id="summary-card" class="rounded-3xl p-6 text-white shadow-xl shadow-primary/30 mb-8 relative overflow-hidden transition-all duration-300" style="background: linear-gradient(to bottom right, #6366f1, #9333ea);">
                 <!-- Decorative circles -->
-                <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-10"></div>
-                <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-10"></div>
+                <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-10 pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-10 pointer-events-none"></div>
                 
                 <div class="relative z-10">
                     <div class="text-sm font-medium opacity-90 mb-1 flex items-center justify-between">
@@ -145,22 +155,29 @@
                             <div class="font-semibold font-num text-sm sm:text-base truncate" id="total-expense">¥0</div>
                         </div>
                         <div class="flex-1 pl-2">
-                            <div class="opacity-80 text-[10px] mb-1 flex items-center"><i class="fa-solid fa-piggy-bank text-blue-300 mr-1"></i> 貯金</div>
+                            <div class="opacity-80 text-[10px] mb-1 flex items-center"><i class="fa-solid fa-piggy-bank text-blue-300 mr-1"></i> 貯金総額</div>
                             <div class="font-semibold font-num text-sm sm:text-base truncate" id="total-saving">¥0</div>
                         </div>
                     </div>
 
                     <!-- Saving Progress -->
-                    <div class="mt-5">
-                        <div class="flex justify-between text-xs mb-2 font-medium">
-                            <span class="opacity-90">貯金目標: <span id="saving-target-display" class="font-num">¥0</span></span>
-                            <span id="saving-progress-text" class="font-num font-bold">0%</span>
+                    <div class="mt-5 border-t border-white/20 pt-4">
+                        <div class="text-xs font-bold opacity-90 mb-2">カテゴリ別貯金</div>
+                        <div id="home-saving-list" class="space-y-2">
+                            <!-- JSで注入 -->
                         </div>
-                        <div class="w-full bg-black/20 rounded-full h-2 overflow-hidden backdrop-blur-sm">
-                            <div class="bg-white h-full rounded-full transition-all duration-700 ease-out" id="saving-progress-bar" style="width: 0%"></div>
-                        </div>
-                        <div id="saving-status-msg" class="text-[10px] mt-1.5 opacity-80 text-right">目標まであと ¥0</div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Budget Progress (Home) -->
+            <div class="mb-8">
+                <div class="flex justify-between items-end mb-3">
+                    <h3 class="text-sm font-bold text-gray-500"><i class="fa-solid fa-chart-pie mr-1"></i> 支出予算の進捗</h3>
+                    <button onclick="switchTab('budget')" class="text-xs text-primary font-bold">詳細を見る</button>
+                </div>
+                <div id="home-budget-list" class="space-y-2">
+                    <!-- Home Budget Bars will be injected here -->
                 </div>
             </div>
 
@@ -168,11 +185,14 @@
             <div class="flex justify-between items-end mb-4">
                 <h2 class="text-lg font-bold text-gray-800">履歴</h2>
                 <div class="flex items-center space-x-2">
-                    <select id="history-filter" onchange="renderHome()" class="text-xs font-bold bg-gray-200 border-none rounded-lg py-1.5 px-2 text-gray-600 outline-none focus:ring-2 focus:ring-primary/50 appearance-none">
-                        <option value="all">すべてのカテゴリ</option>
-                    </select>
                     <span class="text-xs text-gray-500 w-8 text-right" id="transaction-count">0件</span>
                 </div>
+            </div>
+            
+            <!-- History Tabs -->
+            <div class="flex bg-gray-100 p-1 rounded-xl mb-4">
+                <button onclick="setHistoryMode('daily')" id="hist-tab-daily" class="flex-1 py-1.5 text-xs font-bold bg-white shadow-sm rounded-lg text-primary transition-all">日別</button>
+                <button onclick="setHistoryMode('category')" id="hist-tab-category" class="flex-1 py-1.5 text-xs font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600">カテゴリ別</button>
             </div>
             
             <div id="transaction-list" class="space-y-3">
@@ -188,9 +208,10 @@
 
         <!-- ==================== INPUT VIEW ==================== -->
         <main id="view-input" class="content-area p-6 view-section hidden fade-in bg-white">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">記録を追加</h2>
+            <h2 id="input-view-title" class="text-2xl font-bold text-gray-800 mb-6 text-center">記録を追加</h2>
             
             <form id="input-form" class="space-y-6">
+                <input type="hidden" id="edit-tx-id" value="">
                 
                 <!-- Type Toggle (Expense / Saving / Income) -->
                 <div class="flex bg-gray-100 p-1 rounded-2xl relative">
@@ -235,6 +256,13 @@
                             <span class="text-xl font-bold text-gray-400">¥</span>
                         </div>
                         <input type="number" id="input-amount" required placeholder="0" pattern="\d*" class="block w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl text-3xl font-bold text-gray-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-num placeholder:text-gray-300">
+                    </div>
+                    <!-- Quick Amount Buttons -->
+                    <div class="grid grid-cols-4 gap-2 mt-2">
+                        <button type="button" onclick="adjustAmount(1000)" class="bg-primary/10 text-primary py-2 rounded-xl text-sm font-bold active:bg-primary/20 transition-colors">+ 1千</button>
+                        <button type="button" onclick="adjustAmount(5000)" class="bg-primary/10 text-primary py-2 rounded-xl text-sm font-bold active:bg-primary/20 transition-colors">+ 5千</button>
+                        <button type="button" onclick="adjustAmount(10000)" class="bg-primary/10 text-primary py-2 rounded-xl text-sm font-bold active:bg-primary/20 transition-colors">+ 1万</button>
+                        <button type="button" onclick="adjustAmount(0)" class="bg-gray-100 text-gray-500 py-2 rounded-xl text-sm font-bold active:bg-gray-200 transition-colors">クリア</button>
                     </div>
                 </div>
 
@@ -290,9 +318,14 @@
                     <span id="budget-other-income" class="font-bold text-gray-700 font-num">¥0</span>
                 </div>
                 
-                <div class="flex justify-between items-center px-1 mb-4 text-sm">
-                    <span class="text-gray-500 font-bold text-xs"><i class="fa-solid fa-piggy-bank text-blue-500 mr-1"></i> 貯金分 (目標天引き)</span>
-                    <span id="budget-saving-deduction" class="font-bold text-blue-500 font-num">- ¥0</span>
+                <div class="bg-blue-50/50 p-3 rounded-xl border border-blue-100 mb-4">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-blue-600 font-bold text-xs"><i class="fa-solid fa-piggy-bank mr-1"></i> 今月の貯金目標 (天引き)</span>
+                        <span id="budget-saving-deduction" class="font-bold text-blue-600 font-num">- ¥0</span>
+                    </div>
+                    <div id="budget-saving-targets" class="space-y-2 mt-2">
+                        <!-- 貯金目標リストがJSで注入されます -->
+                    </div>
                 </div>
                 
                 <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
@@ -331,7 +364,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">給料日 (サイクルの開始日)</label>
                             <p class="text-xs text-gray-400 mb-2">この日から1ヶ月間を「今月」として計算します。</p>
-                            <div class="relative">
+                            <div class="relative mb-3">
                                 <select id="setting-payday" class="block w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 appearance-none outline-none focus:ring-2 focus:ring-primary/20 font-num">
                                     <!-- 1-28 options injected by JS -->
                                 </select>
@@ -339,27 +372,57 @@
                                     <span class="text-gray-500 text-sm">日</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="block text-sm font-medium text-gray-700">毎月の貯金目標 (天引き)</label>
-                                <button onclick="openSavingModal()" class="text-xs text-primary font-bold px-2 py-1 bg-primary/10 rounded-lg hover:bg-primary/20 transition-colors"><i class="fa-solid fa-plus"></i> 追加</button>
-                            </div>
-                            <p class="text-xs text-gray-400 mb-2">設定した額は、予算計算時に収入から自動的に引かれます。</p>
-                            <div id="setting-saving-targets" class="space-y-2 bg-gray-50 p-3 rounded-xl border border-gray-100">
-                                <!-- 貯金目標リストがJSで注入されます -->
-                            </div>
+                            
+                            <!-- 土日祝 前倒し設定 -->
+                            <label class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-100 cursor-pointer">
+                                <input type="checkbox" id="setting-advance" class="w-5 h-5 text-primary rounded focus:ring-primary border-gray-300">
+                                <div class="flex flex-col">
+                                    <span class="text-sm font-bold text-gray-700">土日の場合は前倒しする</span>
+                                    <span class="text-[10px] text-gray-400">給料日が土日の場合、直前の平日に開始日をずらします。</span>
+                                </div>
+                            </label>
                         </div>
                     </div>
-                    
-                    <button onclick="saveSettings()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 rounded-xl transition-all active:scale-[0.98]">
-                        設定を保存
-                    </button>
                 </div>
 
+                <!-- Theme Settings -->
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mt-6">
+                    <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider flex items-center"><i class="fa-solid fa-palette mr-2"></i> テーマ設定</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-gray-600">文字のフォント</label>
+                            <select id="theme-font" class="bg-gray-50 border border-gray-200 rounded-lg py-1.5 px-3 text-xs font-bold text-gray-700 outline-none focus:border-primary">
+                                <option value="'Noto Sans JP', sans-serif">ゴシック体 (標準)</option>
+                                <option value="'M PLUS Rounded 1c', sans-serif">丸ゴシック</option>
+                                <option value="'Noto Serif JP', serif">明朝体</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-gray-600">文字の色</label>
+                            <input type="color" id="theme-text-color" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 shadow-sm">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-gray-600">アプリ背景色</label>
+                            <input type="color" id="theme-app-bg" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 shadow-sm">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-gray-600">カード背景 (左上)</label>
+                            <input type="color" id="theme-card-start" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 shadow-sm">
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <label class="text-xs font-bold text-gray-600">カード背景 (右下)</label>
+                            <input type="color" id="theme-card-end" class="w-10 h-10 rounded-lg cursor-pointer border-0 p-0 shadow-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="saveSettings()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-[0.98] mt-2 flex justify-center items-center">
+                    <i class="fa-solid fa-check mr-2"></i> 基本・テーマ設定を保存する
+                </button>
+
                 <!-- Category Management -->
-                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 mt-6">
                     <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-wider flex items-center"><i class="fa-solid fa-tags mr-2"></i> カテゴリ設定</h3>
                     
                     <div class="mb-4 flex bg-gray-100 p-1 rounded-xl">
@@ -452,16 +515,24 @@
                         <input type="text" id="cat-edit-name" placeholder="例: 家族貯金" class="block w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:bg-white focus:ring-2 focus:ring-primary/20 outline-none font-bold">
                     </div>
                     
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2">カラー</label>
-                        <div class="grid grid-cols-5 gap-2" id="cat-color-picker">
-                            <!-- Injected by JS -->
+                    <div class="flex space-x-4">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-500 mb-2">背景色</label>
+                            <div class="relative w-full h-12 rounded-xl overflow-hidden border border-gray-200">
+                                <input type="color" id="cat-edit-bg" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer">
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-500 mb-2">アイコン色</label>
+                            <div class="relative w-full h-12 rounded-xl overflow-hidden border border-gray-200">
+                                <input type="color" id="cat-edit-text" class="absolute -top-2 -left-2 w-16 h-16 cursor-pointer">
+                            </div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-2">アイコン</label>
-                        <div class="grid grid-cols-6 gap-2" id="cat-icon-picker">
+                        <label class="block text-xs font-bold text-gray-500 mb-2">アイコン (選択)</label>
+                        <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1" id="cat-icon-picker">
                             <!-- Injected by JS -->
                         </div>
                     </div>
@@ -500,97 +571,117 @@
         // --- Constants & Config ---
         const DEFAULT_CATEGORIES = {
             expense: [
-                { id: 'food', name: '食費', icon: 'fa-utensils', color: 'bg-orange-100 text-orange-500' },
-                { id: 'daily', name: '日用品', icon: 'fa-box', color: 'bg-teal-100 text-teal-500' },
-                { id: 'transport', name: '交通費', icon: 'fa-train', color: 'bg-blue-100 text-blue-500' },
-                { id: 'social', name: '交際費', icon: 'fa-mug-hot', color: 'bg-pink-100 text-pink-500' },
-                { id: 'hobby', name: '趣味', icon: 'fa-gamepad', color: 'bg-purple-100 text-purple-500' },
-                { id: 'clothes', name: '衣服・美容', icon: 'fa-shirt', color: 'bg-rose-100 text-rose-500' },
-                { id: 'housing', name: '住居・光熱費', icon: 'fa-house', color: 'bg-indigo-100 text-indigo-500' },
-                { id: 'health', name: '医療費', icon: 'fa-pills', color: 'bg-green-100 text-green-500' },
-                { id: 'other', name: 'その他', icon: 'fa-ellipsis', color: 'bg-gray-200 text-gray-600' }
+                { id: 'food', name: '食費', icon: 'fa-utensils', bg: '#ffe4e6', text: '#f43f5e' }, // Rose pastel
+                { id: 'daily', name: '日用品', icon: 'fa-box', bg: '#ccfbf1', text: '#14b8a6' }, // Teal pastel
+                { id: 'transport', name: '交通費', icon: 'fa-train', bg: '#dbeafe', text: '#3b82f6' }, // Blue pastel
+                { id: 'social', name: '交際費', icon: 'fa-mug-hot', bg: '#fce7f3', text: '#ec4899' }, // Pink pastel
+                { id: 'hobby', name: '趣味', icon: 'fa-gamepad', bg: '#f3e8ff', text: '#a855f7' }, // Purple pastel
+                { id: 'clothes', name: '衣服・美容', icon: 'fa-shirt', bg: '#ffedd5', text: '#f97316' }, // Orange pastel
+                { id: 'housing', name: '住居・光熱費', icon: 'fa-house', bg: '#e0e7ff', text: '#6366f1' }, // Indigo pastel
+                { id: 'health', name: '医療費', icon: 'fa-pills', bg: '#dcfce7', text: '#22c55e' }, // Green pastel
+                { id: 'other', name: 'その他', icon: 'fa-ellipsis', bg: '#f3f4f6', text: '#6b7280' }  // Gray pastel
             ],
             saving: [
-                { id: 'sv_regular', name: '定期貯金', icon: 'fa-piggy-bank', color: 'bg-blue-100 text-blue-500' },
-                { id: 'sv_family', name: '家族貯金', icon: 'fa-house-chimney', color: 'bg-emerald-100 text-emerald-500' },
-                { id: 'sv_travel', name: '旅行用', icon: 'fa-plane', color: 'bg-cyan-100 text-cyan-500' },
-                { id: 'sv_self', name: '自分用', icon: 'fa-user', color: 'bg-purple-100 text-purple-500' }
+                { id: 'sv_regular', name: '定期貯金', icon: 'fa-piggy-bank', bg: '#dbeafe', text: '#3b82f6' },
+                { id: 'sv_family', name: '家族貯金', icon: 'fa-house-chimney', bg: '#dcfce7', text: '#22c55e' },
+                { id: 'sv_travel', name: '旅行用', icon: 'fa-plane', bg: '#cffafe', text: '#06b6d4' },
+                { id: 'sv_self', name: '自分用', icon: 'fa-user', bg: '#f3e8ff', text: '#a855f7' }
             ],
             income: [
-                { id: 'salary', name: '給与', icon: 'fa-money-bill-wave', color: 'bg-emerald-100 text-emerald-500' },
-                { id: 'bonus', name: '賞与', icon: 'fa-sack-dollar', color: 'bg-emerald-100 text-emerald-500' },
-                { id: 'side', name: '副業', icon: 'fa-laptop', color: 'bg-cyan-100 text-cyan-500' },
-                { id: 'pocket', name: 'お小遣い', icon: 'fa-wallet', color: 'bg-yellow-100 text-yellow-600' },
-                { id: 'other_in', name: 'その他', icon: 'fa-ellipsis', color: 'bg-gray-200 text-gray-600' }
+                { id: 'salary', name: '給与', icon: 'fa-money-bill-wave', bg: '#dcfce7', text: '#22c55e' },
+                { id: 'bonus', name: '賞与', icon: 'fa-sack-dollar', bg: '#dcfce7', text: '#22c55e' },
+                { id: 'side', name: '副業', icon: 'fa-laptop', bg: '#cffafe', text: '#06b6d4' },
+                { id: 'pocket', name: 'お小遣い', icon: 'fa-wallet', bg: '#fef08a', text: '#ca8a04' },
+                { id: 'other_in', name: 'その他', icon: 'fa-ellipsis', bg: '#f3f4f6', text: '#6b7280' }
             ]
         };
-
-        const CAT_COLORS = [
-            { id: 'c-red', cls: 'bg-red-100 text-red-500', hex: 'bg-red-500' },
-            { id: 'c-orange', cls: 'bg-orange-100 text-orange-500', hex: 'bg-orange-500' },
-            { id: 'c-yellow', cls: 'bg-yellow-100 text-yellow-600', hex: 'bg-yellow-500' },
-            { id: 'c-green', cls: 'bg-green-100 text-green-500', hex: 'bg-green-500' },
-            { id: 'c-emerald', cls: 'bg-emerald-100 text-emerald-500', hex: 'bg-emerald-500' },
-            { id: 'c-teal', cls: 'bg-teal-100 text-teal-500', hex: 'bg-teal-500' },
-            { id: 'c-cyan', cls: 'bg-cyan-100 text-cyan-500', hex: 'bg-cyan-500' },
-            { id: 'c-blue', cls: 'bg-blue-100 text-blue-500', hex: 'bg-blue-500' },
-            { id: 'c-indigo', cls: 'bg-indigo-100 text-indigo-500', hex: 'bg-indigo-500' },
-            { id: 'c-purple', cls: 'bg-purple-100 text-purple-500', hex: 'bg-purple-500' },
-            { id: 'c-pink', cls: 'bg-pink-100 text-pink-500', hex: 'bg-pink-500' },
-            { id: 'c-rose', cls: 'bg-rose-100 text-rose-500', hex: 'bg-rose-500' },
-            { id: 'c-gray', cls: 'bg-gray-200 text-gray-600', hex: 'bg-gray-500' },
-            { id: 'c-black', cls: 'bg-gray-800 text-white', hex: 'bg-gray-800' }
-        ];
 
         const CAT_ICONS = [
             'fa-piggy-bank', 'fa-wallet', 'fa-coins', 'fa-credit-card', 'fa-cart-shopping', 
             'fa-utensils', 'fa-mug-hot', 'fa-train', 'fa-car', 'fa-house', 'fa-bolt', 'fa-droplet',
-            'fa-shirt', 'fa-heart', 'fa-gamepad', 'fa-book', 'fa-gift', 'fa-baby-carriage', 'fa-paw', 'fa-star'
+            'fa-shirt', 'fa-heart', 'fa-gamepad', 'fa-book', 'fa-gift', 'fa-baby-carriage', 'fa-paw', 'fa-star',
+            'fa-music', 'fa-film', 'fa-camera', 'fa-plane', 'fa-graduation-cap'
         ];
 
         const DEFAULT_DATA = {
             transactions: [],
             settings: {
                 payday: 25,
-                savingTargets: {},
-                categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES))
+                paydayAdvance: false,
+                categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+                theme: {
+                    appBg: '#f8fafc',
+                    cardStart: '#6366f1',
+                    cardEnd: '#9333ea',
+                    textColor: '#1f2937',
+                    fontFamily: '"Noto Sans JP", sans-serif'
+                }
             },
-            budgets: {} // key: 'YYYY-MM', value: { income: 0, allocations: { catId: amount } }
+            budgets: {} // key: 'YYYY-MM', value: { income: 0, allocations: { catId: amount }, savingTargets: { catId: amount } }
         };
 
         // --- Data & State Management ---
-        let appData = JSON.parse(localStorage.getItem('moneyApp_v1')) || DEFAULT_DATA;
+        let appData = JSON.parse(localStorage.getItem('moneyApp_v2')) || JSON.parse(localStorage.getItem('moneyApp_v1')) || DEFAULT_DATA;
         let currentDisplayDate = new Date(); 
         let currentCatManageType = 'expense';
         let activeCategoryTab = 'expense';
-        let selectedCatColor = CAT_COLORS[0].cls;
         let selectedCatIcon = CAT_ICONS[0];
+        let homeHistoryMode = 'daily'; // 'daily' or 'category'
 
         // Formatters
         const fmtCurr = (num) => new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(num || 0);
         const fmtDate = (dStr) => {
             const d = new Date(dStr);
-            return `${d.getMonth()+1}/${d.getDate()}`;
+            const days = ['日', '月', '火', '水', '木', '金', '土'];
+            return `${d.getMonth()+1}/${d.getDate()} (${days[d.getDay()]})`;
         };
 
         // --- Core Logic ---
         function saveData() {
-            localStorage.setItem('moneyApp_v1', JSON.stringify(appData));
+            localStorage.setItem('moneyApp_v2', JSON.stringify(appData));
+        }
+
+        // 土日判定 (祝日は簡易版では土日のみを対象とする)
+        function isWeekend(date) {
+            const day = date.getDay();
+            return day === 0 || day === 6;
+        }
+
+        function getAdjustedDate(year, month, date, advance) {
+            let d = new Date(year, month, date);
+            if (advance) {
+                while (isWeekend(d)) {
+                    d.setDate(d.getDate() - 1);
+                }
+            }
+            return d;
         }
 
         function getPeriod(baseDate, payday) {
             let year = baseDate.getFullYear();
             let month = baseDate.getMonth();
             let date = baseDate.getDate();
+            let advance = appData.settings.paydayAdvance || false;
+            
+            // 当月の設定上の給料日（前倒し考慮）
+            let currentMonthPayday = getAdjustedDate(year, month, payday, advance);
             
             let start, end;
-            if (date >= payday) {
-                start = new Date(year, month, payday);
-                end = new Date(year, month + 1, payday - 1, 23, 59, 59);
+            // 今日が当月の給料日以降なら
+            if (baseDate.getTime() >= currentMonthPayday.getTime()) {
+                start = currentMonthPayday;
+                let nextMonthPayday = getAdjustedDate(year, month + 1, payday, advance);
+                end = new Date(nextMonthPayday.getTime() - 1); // 翌月給料日の1ミリ秒前
             } else {
-                start = new Date(year, month - 1, payday);
-                end = new Date(year, month, payday - 1, 23, 59, 59);
+                // 今日が当月の給料日より前なら（先月サイクル）
+                start = getAdjustedDate(year, month - 1, payday, advance);
+                end = new Date(currentMonthPayday.getTime() - 1);
             }
+            
+            // 時間を00:00:00と23:59:59に調整
+            start.setHours(0,0,0,0);
+            end.setHours(23,59,59,999);
+            
             return { start, end };
         }
         
@@ -606,27 +697,45 @@
         }
 
         function getCategoryDetails(type, id) {
-            return appData.settings.categories[type].find(c => c.id === id) || { name: '不明', icon: 'fa-question', color: 'bg-gray-200 text-gray-500' };
+            const cat = appData.settings.categories[type].find(c => c.id === id) || { name: '不明', icon: 'fa-question', bg: '#f3f4f6', text: '#9ca3af' };
+            // 古いデータ形式 (クラス名) からのフォールバック
+            if (!cat.bg) cat.bg = '#f3f4f6';
+            if (!cat.text) cat.text = '#6b7280';
+            return cat;
         }
 
         // --- UI Rendering ---
         
         function initApp() {
-            // Data Migration (if old version data exists)
+            // Data Migration (v1 to v2, or init)
             if (!appData.settings.categories) {
                 appData.settings.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
             }
-            if (!appData.settings.savingTargets) {
-                appData.settings.savingTargets = {};
+            if (appData.settings.paydayAdvance === undefined) {
+                appData.settings.paydayAdvance = false;
             }
-            // 新規「貯金」カテゴリのマイグレーション
-            if (!appData.settings.categories.saving) {
-                appData.settings.categories.saving = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES.saving));
-                saveData();
+            if (!appData.settings.theme) {
+                appData.settings.theme = JSON.parse(JSON.stringify(DEFAULT_DATA.settings.theme));
             }
-            if (!appData.budgets) {
-                appData.budgets = {};
+            if (!appData.settings.theme.textColor) {
+                appData.settings.theme.textColor = DEFAULT_DATA.settings.theme.textColor;
+                appData.settings.theme.fontFamily = DEFAULT_DATA.settings.theme.fontFamily;
             }
+            
+            // Migrate old class-based colors to hex (v1 -> v2)
+            ['expense', 'income', 'saving'].forEach(type => {
+                if(appData.settings.categories[type]) {
+                    appData.settings.categories[type].forEach((cat, idx) => {
+                        if (cat.color && !cat.bg) {
+                            // デフォルト値のHEXで上書きしてマイグレーション
+                            const defCat = DEFAULT_CATEGORIES[type].find(c => c.id === cat.id) || DEFAULT_CATEGORIES[type][0];
+                            cat.bg = defCat.bg;
+                            cat.text = defCat.text;
+                        }
+                    });
+                }
+            });
+            saveData();
 
             // Setup settings UI
             const pdSelect = document.getElementById('setting-payday');
@@ -635,6 +744,7 @@
                 pdSelect.innerHTML += `<option value="${i}">${i}</option>`;
             }
             pdSelect.value = appData.settings.payday;
+            document.getElementById('setting-advance').checked = appData.settings.paydayAdvance;
 
             // Setup input form default date
             document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
@@ -654,7 +764,6 @@
                 });
             });
             updateCategorySelect('expense');
-            updateHistoryFilter();
 
             // Form submit listener
             document.getElementById('input-form').addEventListener('submit', handleAddTransaction);
@@ -663,9 +772,36 @@
             document.getElementById('prev-month-btn').addEventListener('click', () => changeMonth(-1));
             document.getElementById('next-month-btn').addEventListener('click', () => changeMonth(1));
 
+            // Apply Theme
+            applyTheme();
+
             // Initial Render
             renderHome();
             renderCategorySettings();
+        }
+
+        function setHistoryMode(mode) {
+            homeHistoryMode = mode;
+            const btnDaily = document.getElementById('hist-tab-daily');
+            const btnCat = document.getElementById('hist-tab-category');
+            
+            const activeClass = 'flex-1 py-1.5 text-xs font-bold bg-white shadow-sm rounded-lg text-primary transition-all';
+            const inactiveClass = 'flex-1 py-1.5 text-xs font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600';
+            
+            btnDaily.className = mode === 'daily' ? activeClass : inactiveClass;
+            btnCat.className = mode === 'category' ? activeClass : inactiveClass;
+            
+            renderHome();
+        }
+
+        function adjustAmount(val) {
+            const input = document.getElementById('input-amount');
+            if (val === 0) {
+                input.value = '';
+            } else {
+                const current = parseInt(input.value) || 0;
+                input.value = current + val;
+            }
         }
 
         function renderHome() {
@@ -681,23 +817,37 @@
 
             const txs = getTransactionsForPeriod(period.start, period.end);
             let income = 0, expense = 0, saving = 0;
+            const spentByCat = {};
+
             txs.forEach(tx => {
-                if(tx.type === 'income') income += tx.amount;
-                if(tx.type === 'expense') expense += tx.amount;
-                if(tx.type === 'saving') saving += tx.amount;
+                const isExpCat = appData.settings.categories.expense.some(c => c.id === tx.category);
+                
+                if(tx.type === 'income') {
+                    if (isExpCat) {
+                        // 支出カテゴリの返金/戻りは、出費からマイナスする
+                        expense -= tx.amount;
+                        spentByCat[tx.category] = (spentByCat[tx.category] || 0) - tx.amount;
+                    } else {
+                        income += tx.amount;
+                    }
+                } else if(tx.type === 'expense') {
+                    expense += tx.amount;
+                    spentByCat[tx.category] = (spentByCat[tx.category] || 0) + tx.amount;
+                } else if(tx.type === 'saving') {
+                    saving += tx.amount;
+                }
             });
 
-            // 天引きされる貯金目標合計
+            // 天引きされる貯金目標合計 (月別予算から取得)
+            const pKey = getPeriodKey(period.start);
+            const bData = appData.budgets[pKey] || { income: 0, allocations: {}, savingTargets: {} };
+            
             let totalSavingTarget = 0;
-            Object.values(appData.settings.savingTargets || {}).forEach(v => totalSavingTarget += v);
+            Object.values(bData.savingTargets || {}).forEach(v => totalSavingTarget += v);
 
             // ベース収入（給料など）を取得
-            const pKey = getPeriodKey(period.start);
-            const bData = appData.budgets[pKey] || { income: 0 };
             const baseIncome = bData.income || 0;
 
-            // "使えるお金" ＝ (ベース収入 ＋ 追加収入) - 天引き貯金 - 支出予算内の使用
-            // ホームでの表示としては、単純に残りの利用可能額
             const totalIncomeCalc = baseIncome + income;
             const available = totalIncomeCalc - totalSavingTarget - expense;
             
@@ -716,82 +866,210 @@
             document.getElementById('total-expense').textContent = fmtCurr(expense);
             document.getElementById('total-saving').textContent = fmtCurr(saving);
             
-            // Saving Progress
-            const target = totalSavingTarget;
-            document.getElementById('saving-target-display').textContent = fmtCurr(target);
+            // --- Home Saving Progress ---
+            const homeSavingList = document.getElementById('home-saving-list');
+            homeSavingList.innerHTML = '';
+            let hasSavingTarget = false;
             
-            let progPercent = 0;
-            if (target > 0) {
-                progPercent = Math.max(0, Math.min(100, (saving / target) * 100));
-            }
+            const spentSavingByCat = {};
+            txs.forEach(tx => {
+                if (tx.type === 'saving') {
+                    spentSavingByCat[tx.category] = (spentSavingByCat[tx.category] || 0) + tx.amount;
+                }
+            });
+
+            appData.settings.categories.saving.forEach(cat => {
+                const target = (bData.savingTargets && bData.savingTargets[cat.id]) || 0;
+                const current = spentSavingByCat[cat.id] || 0;
+                
+                if (target > 0 || current > 0) {
+                    hasSavingTarget = true;
+                    homeSavingList.innerHTML += `
+                    <div class="flex justify-between items-center text-sm py-0.5">
+                        <div class="flex items-center">
+                            <span class="mr-2 opacity-90"><i class="fa-solid ${cat.icon} w-4 text-center mr-1"></i>${cat.name}</span>
+                        </div>
+                        <div class="font-num">
+                            <span class="font-bold">${fmtCurr(current)}</span>
+                            ${target > 0 ? `<span class="opacity-60 text-xs"> / ${fmtCurr(target)}</span>` : ''}
+                        </div>
+                    </div>
+                    `;
+                }
+            });
             
-            document.getElementById('saving-progress-text').textContent = `${Math.floor(progPercent)}%`;
-            setTimeout(() => {
-                document.getElementById('saving-progress-bar').style.width = `${progPercent}%`;
-            }, 100);
-
-            const statusMsg = document.getElementById('saving-status-msg');
-            if (saving >= target && target > 0) {
-                statusMsg.textContent = "🎉 目標達成！素晴らしいです！";
-                document.getElementById('saving-progress-bar').className = "bg-emerald-300 h-full rounded-full transition-all duration-700";
-            } else {
-                const diff = target > 0 ? target - saving : 0;
-                statusMsg.textContent = target > 0 ? `目標達成まであと ${fmtCurr(diff)}` : '貯金目標が未設定です';
-                document.getElementById('saving-progress-bar').className = "bg-white h-full rounded-full transition-all duration-700";
+            if (!hasSavingTarget) {
+                homeSavingList.innerHTML = `<p class="text-xs opacity-70">貯金記録や目標がありません</p>`;
             }
 
-            // Render List
+            // --- Home Budget Progress Bars ---
+            const homeBudgetList = document.getElementById('home-budget-list');
+            homeBudgetList.innerHTML = '';
+            let hasBudget = false;
+            
+            appData.settings.categories.expense.forEach(cat => {
+                const allocated = bData.allocations[cat.id] || 0;
+                if (allocated > 0) {
+                    hasBudget = true;
+                    const spent = spentByCat[cat.id] || 0;
+                    const progress = Math.min(100, (spent / allocated) * 100);
+                    const isOver = spent > allocated;
+                    const remain = allocated - spent;
+                    const barColor = isOver ? 'bg-expense' : 'bg-primary';
+                    const textCls = isOver ? 'text-expense font-bold' : (remain > 0 ? 'text-gray-500' : 'text-gray-400');
+
+                    homeBudgetList.innerHTML += `
+                    <div class="bg-white rounded-xl p-3 shadow-sm border ${isOver ? 'border-red-100' : 'border-gray-100'} mb-2">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <div class="flex items-center">
+                                <div class="w-5 h-5 rounded-md flex items-center justify-center mr-2" style="background-color: ${cat.bg}; color: ${cat.text}">
+                                    <i class="fa-solid ${cat.icon} text-[10px]"></i>
+                                </div>
+                                <span class="text-xs font-bold text-gray-700">${cat.name}</span>
+                            </div>
+                            <span class="text-[10px] font-num ${textCls}">${isOver ? '超過: ' : '残: '}¥${Math.abs(remain).toLocaleString()}</span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                            <div class="${barColor} h-full rounded-full transition-all" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                    `;
+                }
+            });
+            if (!hasBudget) {
+                homeBudgetList.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">予算が設定されていません</p>`;
+            }
+
+
+            // --- Transaction List Rendering ---
             const listEl = document.getElementById('transaction-list');
             const emptyEl = document.getElementById('empty-state');
             
-            const filterVal = document.getElementById('history-filter').value;
-            let filteredTxs = txs;
-            if (filterVal !== 'all') {
-                filteredTxs = txs.filter(t => t.category === filterVal);
-            }
-
-            document.getElementById('transaction-count').textContent = `${filteredTxs.length}件`;
-            
+            document.getElementById('transaction-count').textContent = `${txs.length}件`;
             listEl.innerHTML = '';
-            if (filteredTxs.length === 0) {
+
+            if (txs.length === 0) {
                 emptyEl.classList.remove('hidden');
                 emptyEl.classList.add('flex');
+                return;
             } else {
                 emptyEl.classList.add('hidden');
                 emptyEl.classList.remove('flex');
-                
-                filteredTxs.forEach(tx => {
+            }
+            
+            if (homeHistoryMode === 'daily') {
+                // 日別表示 (そのままリスト)
+                txs.forEach(tx => {
                     const cat = getCategoryDetails(tx.type, tx.category);
                     const isExp = tx.type === 'expense';
                     const isSav = tx.type === 'saving';
                     const amountStr = (isExp || isSav ? '-' : '+') + fmtCurr(tx.amount);
-                    let amountColor = 'text-income';
-                    if (isExp) amountColor = 'text-expense';
-                    if (isSav) amountColor = 'text-blue-500';
+                    let amountColor = isExp ? 'text-red-500' : (isSav ? 'text-teal-500' : 'text-blue-500');
                     
-                    const item = document.createElement('div');
-                    item.className = 'bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between mb-2';
-                    item.innerHTML = `
-                        <div class="flex items-center flex-1">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4 ${cat.color}">
-                                <i class="fa-solid ${cat.icon} text-lg"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-baseline justify-between mb-0.5">
-                                    <h4 class="font-bold text-gray-800 text-sm truncate">${cat.name}</h4>
-                                    <span class="text-xs text-gray-400 font-num">${fmtDate(tx.date)}</span>
+                    listEl.innerHTML += `
+                        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between mb-2">
+                            <div class="flex items-center flex-1">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" style="background-color: ${cat.bg}; color: ${cat.text}">
+                                    <i class="fa-solid ${cat.icon} text-lg"></i>
                                 </div>
-                                <p class="text-xs text-gray-500 truncate">${tx.note || 'メモなし'}</p>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-baseline justify-between mb-0.5">
+                                        <h4 class="font-bold text-gray-800 text-sm truncate">${cat.name}</h4>
+                                        <span class="text-[10px] text-gray-400 font-num">${fmtDate(tx.date)}</span>
+                                    </div>
+                                    <p class="text-xs text-gray-500 truncate">${tx.note || 'メモなし'}</p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="flex flex-col items-end ml-4">
-                            <span class="font-bold font-num text-sm ${amountColor}">${amountStr}</span>
-                            <button onclick="reqDeleteTx('${tx.id}')" class="text-gray-300 hover:text-red-400 mt-1 transition-colors px-2 py-1">
-                                <i class="fa-solid fa-trash-can text-[10px]"></i>
-                            </button>
+                            <div class="flex flex-col items-end ml-4 shrink-0">
+                                <span class="font-bold font-num text-sm ${amountColor}">${amountStr}</span>
+                                <div class="flex space-x-1 mt-1">
+                                    <button onclick="editTx('${tx.id}')" class="text-gray-300 hover:text-primary transition-colors px-1.5 py-1">
+                                        <i class="fa-solid fa-pen text-[10px]"></i>
+                                    </button>
+                                    <button onclick="reqDeleteTx('${tx.id}')" class="text-gray-300 hover:text-red-400 transition-colors px-1.5 py-1">
+                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     `;
-                    listEl.appendChild(item);
+                });
+            } else {
+                // カテゴリ別表示
+                const grouped = {};
+                txs.forEach(tx => {
+                    const isExpCat = appData.settings.categories.expense.some(c => c.id === tx.category);
+                    const isSavCat = appData.settings.categories.saving.some(c => c.id === tx.category);
+                    
+                    let baseType = 'income';
+                    if (isExpCat) baseType = 'expense';
+                    if (isSavCat) baseType = 'saving';
+
+                    if(!grouped[tx.category]) grouped[tx.category] = { type: baseType, total: 0, items: [] };
+                    
+                    if (baseType === 'expense' && tx.type === 'income') {
+                        grouped[tx.category].total -= tx.amount; // 返金
+                    } else if (baseType === 'expense' && tx.type === 'expense') {
+                        grouped[tx.category].total += tx.amount;
+                    } else {
+                        grouped[tx.category].total += tx.amount;
+                    }
+                    
+                    grouped[tx.category].items.push(tx);
+                });
+
+                Object.keys(grouped).forEach(catId => {
+                    const g = grouped[catId];
+                    const cat = getCategoryDetails(g.type, catId);
+                    const isExpGrp = g.type === 'expense';
+                    const isSavGrp = g.type === 'saving';
+                    
+                    let totalStr = '';
+                    if (isExpGrp || isSavGrp) {
+                        totalStr = (g.total >= 0 ? '-' : '+') + fmtCurr(Math.abs(g.total));
+                    } else {
+                        totalStr = '+' + fmtCurr(g.total);
+                    }
+                    let totalColor = isExpGrp ? 'text-red-500' : (isSavGrp ? 'text-teal-500' : 'text-blue-500');
+
+                    let itemsHtml = '';
+                    g.items.forEach(tx => {
+                        const isTxExp = tx.type === 'expense';
+                        const isTxSav = tx.type === 'saving';
+                        const txAmountStr = (isTxExp || isTxSav ? '-' : '+') + fmtCurr(tx.amount);
+                        const txColor = isTxExp ? 'text-red-500' : (isTxSav ? 'text-teal-500' : 'text-blue-500');
+
+                        itemsHtml += `
+                            <div class="flex justify-between items-center py-2 border-t border-gray-50 mt-1">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-gray-400 font-num">${fmtDate(tx.date)}</span>
+                                    <span class="text-xs text-gray-600 truncate max-w-[120px]">${tx.note || 'メモなし'}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="text-xs font-bold font-num ${txColor} mr-3">${txAmountStr}</span>
+                                    <button onclick="editTx('${tx.id}')" class="text-gray-300 hover:text-primary mr-2"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                    <button onclick="reqDeleteTx('${tx.id}')" class="text-gray-300 hover:text-red-400"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    listEl.innerHTML += `
+                        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center flex-1">
+                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}">
+                                        <i class="fa-solid ${cat.icon}"></i>
+                                    </div>
+                                    <h4 class="font-bold text-gray-800 text-sm">${cat.name} <span class="text-[10px] text-gray-400 font-normal ml-1">(${g.items.length}件)</span></h4>
+                                </div>
+                                <span class="font-bold font-num text-sm ${totalColor}">${totalStr}</span>
+                            </div>
+                            <div class="pl-13 pr-1">
+                                ${itemsHtml}
+                            </div>
+                        </div>
+                    `;
                 });
             }
         }
@@ -802,11 +1080,13 @@
             const pKey = getPeriodKey(period.start);
             
             if (!appData.budgets[pKey]) {
-                appData.budgets[pKey] = { income: 0, allocations: {} };
+                appData.budgets[pKey] = { income: 0, allocations: {}, savingTargets: {} };
                 saveData();
             }
             
             const bData = appData.budgets[pKey];
+            if(!bData.savingTargets) bData.savingTargets = {}; // fallback for older data
+            
             document.getElementById('budget-income').value = bData.income || '';
 
             // Calculate additional income & spent amounts
@@ -815,8 +1095,13 @@
             let otherIncome = 0;
             
             txs.forEach(t => {
+                const isExpCat = appData.settings.categories.expense.some(c => c.id === t.category);
                 if (t.type === 'income') {
-                    otherIncome += t.amount;
+                    if (isExpCat) {
+                        spentByCat[t.category] = (spentByCat[t.category] || 0) - t.amount;
+                    } else {
+                        otherIncome += t.amount;
+                    }
                 } else if (t.type === 'expense' || t.type === 'saving') {
                     spentByCat[t.category] = (spentByCat[t.category] || 0) + t.amount;
                 }
@@ -824,9 +1109,28 @@
             
             document.getElementById('budget-other-income').textContent = fmtCurr(otherIncome);
 
-            // 天引き貯金合計
+            // 月別天引き貯金合計とリスト生成
             let totalSavingTarget = 0;
-            Object.values(appData.settings.savingTargets || {}).forEach(v => totalSavingTarget += v);
+            const savingTargetListEl = document.getElementById('budget-saving-targets');
+            savingTargetListEl.innerHTML = '';
+            
+            appData.settings.categories.saving.forEach(cat => {
+                const targetAmt = bData.savingTargets[cat.id] || 0;
+                totalSavingTarget += targetAmt;
+                
+                savingTargetListEl.innerHTML += `
+                <div class="flex items-center justify-between bg-white/60 p-2 rounded-lg border border-blue-50">
+                    <span class="text-xs font-bold text-gray-600 flex items-center">
+                        <i class="fa-solid ${cat.icon} text-blue-400 w-4 text-center mr-1"></i> ${cat.name}
+                    </span>
+                    <div class="relative w-24">
+                        <span class="absolute inset-y-0 left-0 pl-1.5 flex items-center text-gray-400 text-[10px]">¥</span>
+                        <input type="number" onchange="updateBudgetSavingTarget('${cat.id}', this.value)" value="${targetAmt || ''}" class="w-full bg-white border border-gray-200 rounded-md py-1 pl-5 pr-1.5 text-right font-num font-bold text-xs focus:border-primary outline-none" placeholder="0">
+                    </div>
+                </div>
+                `;
+            });
+            
             document.getElementById('budget-saving-deduction').textContent = `- ${fmtCurr(totalSavingTarget)}`;
 
             let allocatedTotal = 0;
@@ -848,7 +1152,7 @@
                 <div class="bg-white p-4 rounded-2xl border ${isOver ? 'border-red-200 shadow-sm shadow-red-500/10' : 'border-gray-100 shadow-sm'} mb-2">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center flex-1">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-3 ${cat.color}">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}">
                                 <i class="fa-solid ${cat.icon}"></i>
                             </div>
                             <span class="font-bold text-gray-700 text-sm truncate mr-2">${cat.name}</span>
@@ -864,9 +1168,6 @@
                         <span class="${remainColor}">
                             ${isOver ? '超過: ' : '残: '}¥${Math.abs(remaining).toLocaleString()}
                         </span>
-                    </div>
-                    <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                        <div class="${barColor} h-full rounded-full transition-all" style="width: ${progress}%"></div>
                     </div>
                 </div>
                 `;
@@ -899,6 +1200,16 @@
             renderBudget();
         }
 
+        function updateBudgetSavingTarget(catId, val) {
+            const period = getPeriod(currentDisplayDate, appData.settings.payday);
+            const pKey = getPeriodKey(period.start);
+            if(!appData.budgets[pKey].savingTargets) appData.budgets[pKey].savingTargets = {};
+            appData.budgets[pKey].savingTargets[catId] = parseInt(val) || 0;
+            saveData();
+            renderBudget();
+            renderHome();
+        }
+
 
         // --- Category Management Logic ---
         function switchCatManageTab(type) {
@@ -918,33 +1229,13 @@
 
         function renderSettings() {
             document.getElementById('setting-payday').value = appData.settings.payday;
+            document.getElementById('setting-advance').checked = appData.settings.paydayAdvance;
             
-            const targetList = document.getElementById('setting-saving-targets');
-            targetList.innerHTML = '';
-            
-            appData.settings.categories.saving.forEach(cat => {
-                const amount = appData.settings.savingTargets[cat.id] || 0;
-                targetList.innerHTML += `
-                <div class="flex items-center justify-between bg-white p-2.5 rounded-xl border border-gray-100 mb-1">
-                    <div class="flex items-center flex-1">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${cat.color}">
-                            <i class="fa-solid ${cat.icon} text-sm"></i>
-                        </div>
-                        <div class="flex flex-col">
-                            <span class="text-sm font-bold text-gray-700 leading-tight">${cat.name}</span>
-                            <div class="flex space-x-2 mt-1">
-                                <button onclick="openSavingModal('${cat.id}')" class="text-[10px] text-gray-400 hover:text-primary"><i class="fa-solid fa-pen"></i> 編集</button>
-                                <button onclick="reqDeleteSavingCat('${cat.id}')" class="text-[10px] text-gray-400 hover:text-red-400"><i class="fa-solid fa-trash-can"></i> 削除</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="relative w-28">
-                        <span class="absolute inset-y-0 left-0 pl-2 flex items-center text-gray-400 text-xs">¥</span>
-                        <input type="number" data-cat-id="${cat.id}" value="${amount || ''}" class="saving-target-input w-full bg-gray-50 border border-gray-200 rounded-lg py-1.5 pl-6 pr-2 text-right font-num font-bold text-sm focus:bg-white focus:border-primary outline-none placeholder:text-gray-300" placeholder="0">
-                    </div>
-                </div>
-                `;
-            });
+            document.getElementById('theme-font').value = appData.settings.theme.fontFamily || '"Noto Sans JP", sans-serif';
+            document.getElementById('theme-text-color').value = appData.settings.theme.textColor || '#1f2937';
+            document.getElementById('theme-app-bg').value = appData.settings.theme.appBg;
+            document.getElementById('theme-card-start').value = appData.settings.theme.cardStart;
+            document.getElementById('theme-card-end').value = appData.settings.theme.cardEnd;
         }
 
         function renderCategorySettings() {
@@ -953,9 +1244,9 @@
             
             appData.settings.categories[currentCatManageType].forEach(cat => {
                 listEl.innerHTML += `
-                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 mb-2">
                     <div class="flex items-center flex-1">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${cat.color}">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}">
                             <i class="fa-solid ${cat.icon} text-sm"></i>
                         </div>
                         <span class="font-bold text-gray-700 text-sm">${cat.name}</span>
@@ -979,29 +1270,25 @@
             const content = document.getElementById('category-modal-content');
             document.getElementById('cat-modal-title').textContent = catId ? 'カテゴリを編集' : 'カテゴリを追加';
             
-            let cat = { id: '', name: '', color: CAT_COLORS[0].cls, icon: CAT_ICONS[0] };
+            let cat = { id: '', name: '', bg: '#f3f4f6', text: '#6b7280', icon: CAT_ICONS[0] };
             if (catId) {
                 cat = appData.settings.categories[currentCatManageType].find(c => c.id === catId);
+                // Fallback for old data
+                if (!cat.bg) cat.bg = '#f3f4f6';
+                if (!cat.text) cat.text = '#6b7280';
             }
             
             document.getElementById('cat-edit-id').value = cat.id;
             document.getElementById('cat-edit-name').value = cat.name;
-            selectedCatColor = cat.color;
+            document.getElementById('cat-edit-bg').value = cat.bg;
+            document.getElementById('cat-edit-text').value = cat.text;
             selectedCatIcon = cat.icon;
-
-            // Render color picker
-            const colorPicker = document.getElementById('cat-color-picker');
-            colorPicker.innerHTML = '';
-            CAT_COLORS.forEach(c => {
-                const active = selectedCatColor === c.cls ? 'ring-2 ring-offset-2 ring-gray-400' : '';
-                colorPicker.innerHTML += `<button onclick="selectCatColor('${c.cls}', this)" class="w-8 h-8 rounded-full ${c.hex} ${active} transition-all"></button>`;
-            });
 
             // Render icon picker
             const iconPicker = document.getElementById('cat-icon-picker');
             iconPicker.innerHTML = '';
             CAT_ICONS.forEach(ic => {
-                const active = selectedCatIcon === ic ? 'bg-gray-200 text-gray-800' : 'text-gray-400 hover:bg-gray-100';
+                const active = selectedCatIcon === ic ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400 hover:bg-gray-200';
                 iconPicker.innerHTML += `<button onclick="selectCatIcon('${ic}', this)" class="w-10 h-10 rounded-xl flex items-center justify-center ${active} transition-all"><i class="fa-solid ${ic}"></i></button>`;
             });
 
@@ -1028,16 +1315,18 @@
         function selectCatIcon(ic, btn) {
             selectedCatIcon = ic;
             Array.from(document.getElementById('cat-icon-picker').children).forEach(el => {
-                el.classList.remove('bg-gray-200', 'text-gray-800');
-                el.classList.add('text-gray-400');
+                el.classList.remove('bg-primary', 'text-white');
+                el.classList.add('bg-gray-100', 'text-gray-400');
             });
-            btn.classList.add('bg-gray-200', 'text-gray-800');
-            btn.classList.remove('text-gray-400');
+            btn.classList.add('bg-primary', 'text-white');
+            btn.classList.remove('bg-gray-100', 'text-gray-400');
         }
 
         function saveCategory() {
             const id = document.getElementById('cat-edit-id').value;
             const name = document.getElementById('cat-edit-name').value.trim();
+            const bg = document.getElementById('cat-edit-bg').value;
+            const text = document.getElementById('cat-edit-text').value;
             
             if(!name) {
                 showToast('カテゴリ名を入力してください', 'error');
@@ -1048,11 +1337,11 @@
             if (id) {
                 const idx = list.findIndex(c => c.id === id);
                 if (idx > -1) {
-                    list[idx] = { ...list[idx], name, color: selectedCatColor, icon: selectedCatIcon };
+                    list[idx] = { ...list[idx], name, bg, text, icon: selectedCatIcon };
                 }
             } else {
                 const newId = 'cat_' + Date.now().toString();
-                list.push({ id: newId, name, color: selectedCatColor, icon: selectedCatIcon });
+                list.push({ id: newId, name, bg, text, icon: selectedCatIcon });
             }
 
             saveData();
@@ -1064,7 +1353,6 @@
                 renderCategorySettings();
             }
 
-            updateHistoryFilter();
             closeCategoryModal();
             showToast('保存しました');
         }
@@ -1234,39 +1522,55 @@
         function updateCategorySelect(type) {
             const select = document.getElementById('input-category');
             select.innerHTML = '';
-            appData.settings.categories[type].forEach(cat => {
-                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-            });
-        }
-
-        function updateHistoryFilter() {
-            const filterEl = document.getElementById('history-filter');
-            const currentVal = filterEl.value;
-            filterEl.innerHTML = '<option value="all">すべてのカテゴリ</option>';
             
-            const addGroup = (label, cats) => {
-                let html = `<optgroup label="${label}">`;
-                cats.forEach(c => {
-                    html += `<option value="${c.id}">${c.name}</option>`;
+            if (type === 'income') {
+                select.innerHTML += `<optgroup label="収入カテゴリ">`;
+                appData.settings.categories['income'].forEach(cat => {
+                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
                 });
-                html += `</optgroup>`;
-                filterEl.innerHTML += html;
-            };
-            
-            addGroup('支出', appData.settings.categories.expense);
-            addGroup('貯金', appData.settings.categories.saving);
-            addGroup('収入', appData.settings.categories.income);
-            
-            if (filterEl.querySelector(`option[value="${currentVal}"]`)) {
-                filterEl.value = currentVal;
+                select.innerHTML += `</optgroup>`;
+                
+                select.innerHTML += `<optgroup label="支出カテゴリ (返金・戻りなど)">`;
+                appData.settings.categories['expense'].forEach(cat => {
+                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
+                select.innerHTML += `</optgroup>`;
             } else {
-                filterEl.value = 'all';
+                appData.settings.categories[type].forEach(cat => {
+                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+                });
             }
         }
 
         // --- Actions ---
+        function editTx(id) {
+            const tx = appData.transactions.find(t => t.id === id);
+            if (!tx) return;
+            
+            document.getElementById('edit-tx-id').value = tx.id;
+            
+            // Set type
+            document.getElementById(`type-${tx.type}`).checked = true;
+            updateCategorySelect(tx.type);
+            
+            const slider = document.getElementById('toggle-slider');
+            if(tx.type === 'income') slider.style.transform = 'translateX(200%)';
+            else if(tx.type === 'saving') slider.style.transform = 'translateX(100%)';
+            else slider.style.transform = 'translateX(0)';
+
+            document.getElementById('input-date').value = tx.date;
+            document.getElementById('input-amount').value = tx.amount;
+            document.getElementById('input-category').value = tx.category;
+            document.getElementById('input-note').value = tx.note || '';
+            
+            document.getElementById('input-view-title').innerHTML = '<i class="fa-solid fa-pen mr-2 text-primary"></i>記録を編集';
+            
+            switchTab('input');
+        }
+
         function handleAddTransaction(e) {
             e.preventDefault();
+            const editId = document.getElementById('edit-tx-id').value;
             const type = document.querySelector('input[name="tx_type"]:checked').value;
             const date = document.getElementById('input-date').value;
             const amount = parseInt(document.getElementById('input-amount').value, 10);
@@ -1278,36 +1582,71 @@
                 return;
             }
 
-            const tx = {
-                id: 'tx_' + Date.now().toString() + Math.floor(Math.random()*1000),
-                type, date, amount, category, note
-            };
+            if (editId) {
+                const idx = appData.transactions.findIndex(t => t.id === editId);
+                if (idx > -1) {
+                    appData.transactions[idx] = { ...appData.transactions[idx], type, date, amount, category, note };
+                    showToast('記録を更新しました', 'success');
+                }
+                document.getElementById('edit-tx-id').value = '';
+                document.getElementById('input-view-title').textContent = '記録を追加';
+            } else {
+                const tx = {
+                    id: 'tx_' + Date.now().toString() + Math.floor(Math.random()*1000),
+                    type, date, amount, category, note
+                };
+                appData.transactions.push(tx);
+                showToast('記録を追加しました', 'success');
+            }
 
-            appData.transactions.push(tx);
             saveData();
             
             document.getElementById('input-amount').value = '';
             document.getElementById('input-note').value = '';
             
-            showToast('記録を追加しました', 'success');
             switchTab('home');
         }
 
         function saveSettings() {
             const payday = document.getElementById('setting-payday').value;
             appData.settings.payday = parseInt(payday) || 25;
+            appData.settings.paydayAdvance = document.getElementById('setting-advance').checked;
             
-            const targetInputs = document.querySelectorAll('.saving-target-input');
-            targetInputs.forEach(input => {
-                const catId = input.getAttribute('data-cat-id');
-                const val = parseInt(input.value) || 0;
-                appData.settings.savingTargets[catId] = val;
-            });
+            appData.settings.theme = {
+                fontFamily: document.getElementById('theme-font').value,
+                textColor: document.getElementById('theme-text-color').value,
+                appBg: document.getElementById('theme-app-bg').value,
+                cardStart: document.getElementById('theme-card-start').value,
+                cardEnd: document.getElementById('theme-card-end').value
+            };
             
             saveData();
+            applyTheme();
             
             showToast('設定を保存しました');
             renderHome(); 
+        }
+
+        function applyTheme() {
+            const theme = appData.settings.theme;
+            document.getElementById('app-container').style.backgroundColor = theme.appBg;
+            document.getElementById('summary-card').style.background = `linear-gradient(to bottom right, ${theme.cardStart}, ${theme.cardEnd})`;
+            document.getElementById('summary-card').style.boxShadow = `0 20px 25px -5px ${theme.cardStart}40, 0 8px 10px -6px ${theme.cardStart}40`;
+            
+            let styleTag = document.getElementById('dynamic-theme-style');
+            if(!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = 'dynamic-theme-style';
+                document.head.appendChild(styleTag);
+            }
+            styleTag.innerHTML = `
+                body, .text-gray-800, .text-gray-700 {
+                    color: ${theme.textColor} !important;
+                }
+                body, input, select, button {
+                    font-family: ${theme.fontFamily} !important;
+                }
+            `;
         }
 
         // --- Delete / Confirm Logic ---
@@ -1348,17 +1687,13 @@
                 showToast('削除しました');
             } else if (confirmActionType === 'deleteCat') {
                 appData.settings.categories[currentCatManageType] = appData.settings.categories[currentCatManageType].filter(c => c.id !== deleteTargetId);
-                delete appData.settings.savingTargets[deleteTargetId];
                 saveData();
                 renderCategorySettings();
-                updateHistoryFilter();
                 showToast('カテゴリを削除しました');
             } else if (confirmActionType === 'deleteSavingCat') {
                 appData.settings.categories.saving = appData.settings.categories.saving.filter(c => c.id !== deleteTargetId);
-                delete appData.settings.savingTargets[deleteTargetId];
                 saveData();
                 renderSettings();
-                updateHistoryFilter();
                 showToast('貯金目標を削除しました');
             } else if (confirmActionType === 'resetAll') {
                 appData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
@@ -1372,6 +1707,13 @@
 
         // --- UI Helpers ---
         function switchTab(tabId) {
+            if (tabId !== 'input') {
+                document.getElementById('edit-tx-id').value = '';
+                document.getElementById('input-view-title').textContent = '記録を追加';
+                document.getElementById('input-amount').value = '';
+                document.getElementById('input-note').value = '';
+            }
+
             document.querySelectorAll('.view-section').forEach(el => {
                 el.classList.add('hidden');
                 el.classList.remove('fade-in');
