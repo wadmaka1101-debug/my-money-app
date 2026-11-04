@@ -22,10 +22,10 @@
                         num: ['"Poppins"', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#6366f1', // Indigo-500
-                        primaryDark: '#4f46e5', // Indigo-600
-                        expense: '#f43f5e', // Rose-500
-                        income: '#10b981', // Emerald-500
+                        primary: '#6366f1',
+                        primaryDark: '#4f46e5',
+                        expense: '#f43f5e',
+                        income: '#10b981',
                         bglight: '#f8fafc',
                     }
                 }
@@ -34,15 +34,9 @@
     </script>
 
     <style>
-        /* Hide scrollbar for clean UI */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
-        body {
-            background-color: #e2e8f0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        body { background-color: #e2e8f0; -webkit-tap-highlight-color: transparent; }
+        
         .app-container {
             max-width: 480px;
             margin: 0 auto;
@@ -55,37 +49,25 @@
             overflow: hidden;
             transition: background-color 0.3s ease;
         }
+        
         .content-area {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 120px; /* Space for bottom nav and extra scroll */
+            /* ナビゲーションバーはブロックとして下に配置されるため、極端な余白は不要です */
+            padding-bottom: 32px; 
         }
         
-        /* Custom Toggle Switch */
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #10b981;
-        }
-        .toggle-checkbox:checked + .toggle-label {
-            background-color: #10b981;
-        }
+        .toggle-checkbox:checked { right: 0; border-color: #10b981; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #10b981; }
         
-        /* Fade in animation */
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
-        }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Toast animation */
-        .toast-enter {
-            animation: toastEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        }
-        .toast-leave {
-            animation: toastLeave 0.4s ease-in forwards;
-        }
+        .toast-enter { animation: toastEnter 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .toast-leave { animation: toastLeave 0.4s ease-in forwards; }
         @keyframes toastEnter {
             from { transform: translateX(-50%) translateY(100px); opacity: 0; }
             to { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -95,14 +77,8 @@
             to { transform: translateX(-50%) translateY(100px); opacity: 0; }
         }
         
-        /* カラーピッカー用 */
-        input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0;
-        }
-        input[type="color"]::-webkit-color-swatch {
-            border: none;
-            border-radius: 0.5rem;
-        }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 0.5rem; }
     </style>
 </head>
 <body class="text-gray-800 antialiased selection:bg-primary selection:text-white">
@@ -110,7 +86,7 @@
     <div class="app-container" id="app-container">
         
         <!-- Header -->
-        <header class="bg-white pt-6 pb-4 px-6 sticky top-0 z-20 flex justify-between items-center shadow-sm">
+        <header class="shrink-0 bg-white pt-6 pb-4 px-6 sticky top-0 z-20 flex justify-between items-center shadow-sm">
             <h1 class="text-xl font-bold text-gray-800 tracking-tight">Money<span class="text-primary">App</span></h1>
             <div id="header-date-nav" class="flex items-center space-x-3 bg-gray-100 px-3 py-1.5 rounded-full text-sm font-medium">
                 <button id="prev-month-btn" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-primary transition-colors rounded-full active:bg-gray-200">
@@ -125,14 +101,12 @@
 
         <!-- ==================== HOME VIEW ==================== -->
         <main id="view-home" class="content-area p-6 view-section fade-in">
-            <!-- Period Info -->
             <div class="text-center text-xs text-gray-500 mb-3 font-medium">
                 集計期間: <span id="period-display">--/-- 〜 --/--</span>
             </div>
 
             <!-- Summary Card -->
             <div id="summary-card" class="rounded-3xl p-6 text-white shadow-xl shadow-primary/30 mb-8 relative overflow-hidden transition-all duration-300" style="background: linear-gradient(to bottom right, #6366f1, #9333ea);">
-                <!-- Decorative circles -->
                 <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-10 pointer-events-none"></div>
                 <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-10 pointer-events-none"></div>
                 
@@ -163,9 +137,7 @@
                     <!-- Saving Progress -->
                     <div class="mt-5 border-t border-white/20 pt-4">
                         <div class="text-xs font-bold opacity-90 mb-2">カテゴリ別貯金</div>
-                        <div id="home-saving-list" class="space-y-2">
-                            <!-- JSで注入 -->
-                        </div>
+                        <div id="home-saving-list" class="space-y-2"></div>
                     </div>
                 </div>
             </div>
@@ -176,9 +148,7 @@
                     <h3 class="text-sm font-bold text-gray-500"><i class="fa-solid fa-chart-pie mr-1"></i> 支出予算の進捗</h3>
                     <button onclick="switchTab('budget')" class="text-xs text-primary font-bold">詳細を見る</button>
                 </div>
-                <div id="home-budget-list" class="space-y-2">
-                    <!-- Home Budget Bars will be injected here -->
-                </div>
+                <div id="home-budget-list" class="space-y-2"></div>
             </div>
 
             <!-- Recent Transactions -->
@@ -195,11 +165,8 @@
                 <button onclick="setHistoryMode('category')" id="hist-tab-category" class="flex-1 py-1.5 text-xs font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600">カテゴリ別</button>
             </div>
             
-            <div id="transaction-list" class="space-y-3">
-                <!-- Transactions will be injected here via JS -->
-            </div>
+            <div id="transaction-list" class="space-y-3"></div>
             
-            <!-- Empty State (Hidden by default) -->
             <div id="empty-state" class="hidden flex-col items-center justify-center py-10 opacity-60">
                 <i class="fa-solid fa-receipt text-4xl text-gray-300 mb-3"></i>
                 <p class="text-sm text-gray-500">この期間の記録はありません</p>
@@ -213,7 +180,6 @@
             <form id="input-form" class="space-y-6">
                 <input type="hidden" id="edit-tx-id" value="">
                 
-                <!-- Type Toggle (Expense / Saving / Income) -->
                 <div class="flex bg-gray-100 p-1 rounded-2xl relative">
                     <div class="w-1/3 text-center relative z-10">
                         <input type="radio" name="tx_type" id="type-expense" value="expense" class="peer hidden" checked>
@@ -233,11 +199,9 @@
                             <i class="fa-solid fa-plus-circle mr-1 hidden sm:inline"></i>収入
                         </label>
                     </div>
-                    <!-- Toggle Slider Background -->
                     <div id="toggle-slider" class="absolute top-1 left-1 w-[calc(33.333%-2.6px)] h-[calc(100%-8px)] bg-white rounded-xl shadow-sm transition-transform duration-300 ease-in-out"></div>
                 </div>
 
-                <!-- Date -->
                 <div>
                     <label class="block text-xs font-bold text-gray-500 mb-2 ml-1">日付</label>
                     <div class="relative">
@@ -248,7 +212,6 @@
                     </div>
                 </div>
 
-                <!-- Amount -->
                 <div>
                     <label class="block text-xs font-bold text-gray-500 mb-2 ml-1">金額</label>
                     <div class="relative">
@@ -257,7 +220,6 @@
                         </div>
                         <input type="number" id="input-amount" required placeholder="0" pattern="\d*" class="block w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-2xl text-3xl font-bold text-gray-800 focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none font-num placeholder:text-gray-300">
                     </div>
-                    <!-- Quick Amount Buttons -->
                     <div class="grid grid-cols-4 gap-2 mt-2">
                         <button type="button" onclick="adjustAmount(1000)" class="bg-primary/10 text-primary py-2 rounded-xl text-sm font-bold active:bg-primary/20 transition-colors">+ 1千</button>
                         <button type="button" onclick="adjustAmount(5000)" class="bg-primary/10 text-primary py-2 rounded-xl text-sm font-bold active:bg-primary/20 transition-colors">+ 5千</button>
@@ -266,7 +228,6 @@
                     </div>
                 </div>
 
-                <!-- Category -->
                 <div>
                     <label class="block text-xs font-bold text-gray-500 mb-2 ml-1">カテゴリ</label>
                     <div class="relative">
@@ -274,7 +235,6 @@
                             <i class="fa-solid fa-tag text-gray-400"></i>
                         </div>
                         <select id="input-category" required class="block w-full pl-11 pr-10 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-800 appearance-none focus:bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none">
-                            <!-- Options injected by JS -->
                         </select>
                         <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                             <i class="fa-solid fa-chevron-down text-gray-400 text-xs"></i>
@@ -282,7 +242,6 @@
                     </div>
                 </div>
 
-                <!-- Note -->
                 <div>
                     <label class="block text-xs font-bold text-gray-500 mb-2 ml-1">メモ (任意)</label>
                     <div class="relative">
@@ -328,9 +287,7 @@
                             <button onclick="openSavingModal()" class="text-[10px] bg-blue-100 text-blue-600 px-2 py-1 rounded-md hover:bg-blue-200 font-bold transition-colors shadow-sm"><i class="fa-solid fa-plus"></i> 追加</button>
                         </div>
                     </div>
-                    <div id="budget-saving-targets" class="space-y-2 mt-2">
-                        <!-- 貯金目標リストがJSで注入されます -->
-                    </div>
+                    <div id="budget-saving-targets" class="space-y-2 mt-2"></div>
                 </div>
                 
                 <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
@@ -344,9 +301,7 @@
                 <span class="text-xs text-gray-500" id="budget-allocated-total">振分済: ¥0</span>
             </div>
             
-            <div id="budget-allocation-list" class="space-y-3 pb-4">
-                <!-- Injected via JS -->
-            </div>
+            <div id="budget-allocation-list" class="space-y-3 pb-4"></div>
 
             <div class="mt-6 pt-4 border-t border-gray-100">
                 <button onclick="openSettlementModal()" class="w-full bg-indigo-50 hover:bg-indigo-100 text-indigo-600 font-bold py-4 rounded-2xl transition-all border border-indigo-200 active:scale-[0.98] flex justify-center items-center shadow-sm">
@@ -370,15 +325,12 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">給料日 (サイクルの開始日)</label>
                             <p class="text-xs text-gray-400 mb-2">この日から1ヶ月間を「今月」として計算します。</p>
                             <div class="relative mb-3">
-                                <select id="setting-payday" class="block w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 appearance-none outline-none focus:ring-2 focus:ring-primary/20 font-num">
-                                    <!-- 1-28 options injected by JS -->
-                                </select>
+                                <select id="setting-payday" class="block w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 appearance-none outline-none focus:ring-2 focus:ring-primary/20 font-num"></select>
                                 <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                                     <span class="text-gray-500 text-sm">日</span>
                                 </div>
                             </div>
                             
-                            <!-- 土日祝 前倒し設定 -->
                             <label class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-100 cursor-pointer">
                                 <input type="checkbox" id="setting-advance" class="w-5 h-5 text-primary rounded focus:ring-primary border-gray-300">
                                 <div class="flex flex-col">
@@ -435,9 +387,7 @@
                         <button onclick="switchCatManageTab('income')" id="cat-tab-income" class="flex-1 py-2 text-sm font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600">収入</button>
                     </div>
 
-                    <div id="settings-category-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto pr-2">
-                        <!-- Injected via JS -->
-                    </div>
+                    <div id="settings-category-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto pr-2"></div>
                     
                     <button onclick="openCategoryModal()" class="w-full bg-primary/10 hover:bg-primary/20 text-primary font-bold py-3 rounded-xl transition-all border border-primary/20 active:scale-[0.98] flex justify-center items-center text-sm">
                         <i class="fa-solid fa-plus mr-2"></i> 新しいカテゴリを追加
@@ -456,7 +406,8 @@
         </main>
 
         <!-- ==================== BOTTOM NAVIGATION ==================== -->
-        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-100 flex justify-around items-center h-[76px] pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-30">
+        <!-- absolute bottom-0 ではなく shrink-0 relative にすることで被り問題を完全解決 -->
+        <nav class="shrink-0 relative w-full bg-white border-t border-gray-100 flex justify-around items-center h-[76px] pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.02)] z-30">
             <button id="tab-home" onclick="switchTab('home')" class="tab-btn flex-1 flex flex-col items-center justify-center text-primary transition-colors h-full">
                 <div class="relative">
                     <i class="fa-solid fa-house text-xl mb-1 transition-transform duration-200"></i>
@@ -470,7 +421,6 @@
             </button>
             
             <button id="tab-input" onclick="switchTab('input')" class="tab-btn flex-1 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 transition-colors h-full relative">
-                <!-- FAB-like design in nav -->
                 <div class="absolute -top-6 bg-primary text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg shadow-primary/40 border-4 border-white transition-transform duration-200 icon-wrapper">
                     <i class="fa-solid fa-plus text-xl"></i>
                 </div>
@@ -483,13 +433,12 @@
             </button>
         </nav>
 
-        <!-- Custom Toast Notification -->
+        <!-- Modals -->
         <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-5 py-3 rounded-full shadow-lg text-sm font-medium z-50 hidden items-center space-x-2">
             <i id="toast-icon" class="fa-solid fa-check-circle text-income"></i>
             <span id="toast-msg">保存しました</span>
         </div>
 
-        <!-- Custom Confirm Modal -->
         <div id="confirm-modal" class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm z-50 hidden flex-col items-center justify-center px-4 opacity-0 transition-opacity duration-300">
             <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300" id="confirm-modal-content">
                 <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 mx-auto">
@@ -504,7 +453,6 @@
             </div>
         </div>
 
-        <!-- Category Edit Modal -->
         <div id="category-modal" class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm z-50 hidden flex-col items-center justify-center px-4 opacity-0 transition-opacity duration-300">
             <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300" id="category-modal-content">
                 <div class="flex justify-between items-center mb-4">
@@ -537,9 +485,16 @@
 
                     <div>
                         <label class="block text-xs font-bold text-gray-500 mb-2">アイコン (選択)</label>
-                        <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1" id="cat-icon-picker">
-                            <!-- Injected by JS -->
-                        </div>
+                        <div class="grid grid-cols-6 gap-2 max-h-32 overflow-y-auto p-1" id="cat-icon-picker"></div>
+                    </div>
+
+                    <div id="cat-edit-show-home-container" class="mt-4 hidden border-t border-gray-100 pt-4">
+                        <label class="flex items-center space-x-3 bg-gray-50 p-3 rounded-xl border border-gray-100 cursor-pointer">
+                            <input type="checkbox" id="cat-edit-show-home" class="w-5 h-5 text-primary rounded focus:ring-primary border-gray-300" checked>
+                            <div class="flex flex-col">
+                                <span class="text-sm font-bold text-gray-700">ホーム画面に総額を表示する</span>
+                            </div>
+                        </label>
                     </div>
                 </div>
 
@@ -549,7 +504,6 @@
             </div>
         </div>
 
-        <!-- Settlement Modal -->
         <div id="settlement-modal" class="absolute inset-0 bg-gray-900/40 backdrop-blur-sm z-50 hidden flex-col items-center justify-center px-4 opacity-0 transition-opacity duration-300">
             <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl transform scale-95 transition-transform duration-300 flex flex-col max-h-[80vh]" id="settlement-modal-content">
                 <div class="flex justify-between items-center mb-4 shrink-0">
@@ -558,10 +512,7 @@
                 </div>
                 
                 <p class="text-xs text-gray-500 mb-4 shrink-0">今月余っている各カテゴリの予算をどうするか選択してください。</p>
-                
-                <div id="settlement-list" class="space-y-3 overflow-y-auto flex-1 pr-1 pb-2">
-                    <!-- Injected via JS -->
-                </div>
+                <div id="settlement-list" class="space-y-3 overflow-y-auto flex-1 pr-1 pb-2"></div>
 
                 <button onclick="executeSettlement()" class="w-full mt-4 py-3.5 bg-primary text-white font-bold rounded-xl active:bg-primaryDark shadow-lg shadow-primary/30 flex justify-center items-center shrink-0">
                     <i class="fa-solid fa-wand-magic-sparkles mr-2"></i> 精算を実行する
@@ -571,20 +522,19 @@
 
     </div>
 
-    <!-- Application Logic -->
+    <!-- Application Logic (No Duplicates) -->
     <script>
-        // --- Constants & Config ---
         const DEFAULT_CATEGORIES = {
             expense: [
-                { id: 'food', name: '食費', icon: 'fa-utensils', bg: '#ffe4e6', text: '#f43f5e' }, // Rose pastel
-                { id: 'daily', name: '日用品', icon: 'fa-box', bg: '#ccfbf1', text: '#14b8a6' }, // Teal pastel
-                { id: 'transport', name: '交通費', icon: 'fa-train', bg: '#dbeafe', text: '#3b82f6' }, // Blue pastel
-                { id: 'social', name: '交際費', icon: 'fa-mug-hot', bg: '#fce7f3', text: '#ec4899' }, // Pink pastel
-                { id: 'hobby', name: '趣味', icon: 'fa-gamepad', bg: '#f3e8ff', text: '#a855f7' }, // Purple pastel
-                { id: 'clothes', name: '衣服・美容', icon: 'fa-shirt', bg: '#ffedd5', text: '#f97316' }, // Orange pastel
-                { id: 'housing', name: '住居・光熱費', icon: 'fa-house', bg: '#e0e7ff', text: '#6366f1' }, // Indigo pastel
-                { id: 'health', name: '医療費', icon: 'fa-pills', bg: '#dcfce7', text: '#22c55e' }, // Green pastel
-                { id: 'other', name: 'その他', icon: 'fa-ellipsis', bg: '#f3f4f6', text: '#6b7280' }  // Gray pastel
+                { id: 'food', name: '食費', icon: 'fa-utensils', bg: '#ffe4e6', text: '#f43f5e' },
+                { id: 'daily', name: '日用品', icon: 'fa-box', bg: '#ccfbf1', text: '#14b8a6' },
+                { id: 'transport', name: '交通費', icon: 'fa-train', bg: '#dbeafe', text: '#3b82f6' },
+                { id: 'social', name: '交際費', icon: 'fa-mug-hot', bg: '#fce7f3', text: '#ec4899' },
+                { id: 'hobby', name: '趣味', icon: 'fa-gamepad', bg: '#f3e8ff', text: '#a855f7' },
+                { id: 'clothes', name: '衣服・美容', icon: 'fa-shirt', bg: '#ffedd5', text: '#f97316' },
+                { id: 'housing', name: '住居・光熱費', icon: 'fa-house', bg: '#e0e7ff', text: '#6366f1' },
+                { id: 'health', name: '医療費', icon: 'fa-pills', bg: '#dcfce7', text: '#22c55e' },
+                { id: 'other', name: 'その他', icon: 'fa-ellipsis', bg: '#f3f4f6', text: '#6b7280' }
             ],
             saving: [
                 { id: 'sv_regular', name: '定期貯金', icon: 'fa-piggy-bank', bg: '#dbeafe', text: '#3b82f6' },
@@ -622,18 +572,16 @@
                     fontFamily: '"Noto Sans JP", sans-serif'
                 }
             },
-            budgets: {} // key: 'YYYY-MM', value: { income: 0, allocations: { catId: amount }, savingTargets: { catId: amount } }
+            budgets: {} 
         };
 
-        // --- Data & State Management ---
         let appData = JSON.parse(localStorage.getItem('moneyApp_v2')) || JSON.parse(localStorage.getItem('moneyApp_v1')) || DEFAULT_DATA;
         let currentDisplayDate = new Date(); 
         let currentCatManageType = 'expense';
         let activeCategoryTab = 'expense';
         let selectedCatIcon = CAT_ICONS[0];
-        let homeHistoryMode = 'daily'; // 'daily' or 'category'
+        let homeHistoryMode = 'daily'; 
 
-        // Formatters
         const fmtCurr = (num) => new Intl.NumberFormat('ja-JP', { style: 'currency', currency: 'JPY' }).format(num || 0);
         const fmtDate = (dStr) => {
             const d = new Date(dStr);
@@ -641,12 +589,8 @@
             return `${d.getMonth()+1}/${d.getDate()} (${days[d.getDay()]})`;
         };
 
-        // --- Core Logic ---
-        function saveData() {
-            localStorage.setItem('moneyApp_v2', JSON.stringify(appData));
-        }
+        function saveData() { localStorage.setItem('moneyApp_v2', JSON.stringify(appData)); }
 
-        // 土日判定 (祝日は簡易版では土日のみを対象とする)
         function isWeekend(date) {
             const day = date.getDay();
             return day === 0 || day === 6;
@@ -655,9 +599,7 @@
         function getAdjustedDate(year, month, date, advance) {
             let d = new Date(year, month, date);
             if (advance) {
-                while (isWeekend(d)) {
-                    d.setDate(d.getDate() - 1);
-                }
+                while (isWeekend(d)) d.setDate(d.getDate() - 1);
             }
             return d;
         }
@@ -665,34 +607,24 @@
         function getPeriod(baseDate, payday) {
             let year = baseDate.getFullYear();
             let month = baseDate.getMonth();
-            let date = baseDate.getDate();
             let advance = appData.settings.paydayAdvance || false;
-            
-            // 当月の設定上の給料日（前倒し考慮）
             let currentMonthPayday = getAdjustedDate(year, month, payday, advance);
             
             let start, end;
-            // 今日が当月の給料日以降なら
             if (baseDate.getTime() >= currentMonthPayday.getTime()) {
                 start = currentMonthPayday;
                 let nextMonthPayday = getAdjustedDate(year, month + 1, payday, advance);
-                end = new Date(nextMonthPayday.getTime() - 1); // 翌月給料日の1ミリ秒前
+                end = new Date(nextMonthPayday.getTime() - 1);
             } else {
-                // 今日が当月の給料日より前なら（先月サイクル）
                 start = getAdjustedDate(year, month - 1, payday, advance);
                 end = new Date(currentMonthPayday.getTime() - 1);
             }
-            
-            // 時間を00:00:00と23:59:59に調整
             start.setHours(0,0,0,0);
             end.setHours(23,59,59,999);
-            
             return { start, end };
         }
         
-        function getPeriodKey(periodStart) {
-            return `${periodStart.getFullYear()}-${(periodStart.getMonth() + 1).toString().padStart(2, '0')}`;
-        }
+        function getPeriodKey(periodStart) { return `${periodStart.getFullYear()}-${(periodStart.getMonth() + 1).toString().padStart(2, '0')}`; }
 
         function getTransactionsForPeriod(start, end) {
             return appData.transactions.filter(tx => {
@@ -703,84 +635,58 @@
 
         function getCategoryDetails(type, id) {
             const cat = appData.settings.categories[type].find(c => c.id === id) || { name: '不明', icon: 'fa-question', bg: '#f3f4f6', text: '#9ca3af' };
-            // 古いデータ形式 (クラス名) からのフォールバック
             if (!cat.bg) cat.bg = '#f3f4f6';
             if (!cat.text) cat.text = '#6b7280';
             return cat;
         }
 
-        // --- UI Rendering ---
-        
         function initApp() {
-            // Data Migration (v1 to v2, or init)
-            if (!appData.settings.categories) {
-                appData.settings.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
-            }
-            if (appData.settings.paydayAdvance === undefined) {
-                appData.settings.paydayAdvance = false;
-            }
-            if (!appData.settings.theme) {
-                appData.settings.theme = JSON.parse(JSON.stringify(DEFAULT_DATA.settings.theme));
-            }
-            if (!appData.settings.theme.textColor) {
-                appData.settings.theme.textColor = DEFAULT_DATA.settings.theme.textColor;
-                appData.settings.theme.fontFamily = DEFAULT_DATA.settings.theme.fontFamily;
-            }
+            if (!appData.settings.categories) appData.settings.categories = JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+            if (appData.settings.paydayAdvance === undefined) appData.settings.paydayAdvance = false;
+            if (!appData.settings.theme) appData.settings.theme = JSON.parse(JSON.stringify(DEFAULT_DATA.settings.theme));
             
-            // Migrate old class-based colors to hex (v1 -> v2)
             ['expense', 'income', 'saving'].forEach(type => {
                 if(appData.settings.categories[type]) {
-                    appData.settings.categories[type].forEach((cat, idx) => {
+                    appData.settings.categories[type].forEach(cat => {
                         if (cat.color && !cat.bg) {
-                            // デフォルト値のHEXで上書きしてマイグレーション
                             const defCat = DEFAULT_CATEGORIES[type].find(c => c.id === cat.id) || DEFAULT_CATEGORIES[type][0];
-                            cat.bg = defCat.bg;
-                            cat.text = defCat.text;
+                            cat.bg = defCat.bg; cat.text = defCat.text;
                         }
                     });
                 }
             });
+            
+            if(appData.settings.categories.saving) {
+                appData.settings.categories.saving.forEach(cat => {
+                    if (cat.showInHome === undefined) cat.showInHome = (cat.id === 'sv_regular');
+                });
+            }
             saveData();
 
-            // Setup settings UI
             const pdSelect = document.getElementById('setting-payday');
             pdSelect.innerHTML = '';
-            for(let i=1; i<=28; i++) {
-                pdSelect.innerHTML += `<option value="${i}">${i}</option>`;
-            }
+            for(let i=1; i<=28; i++) pdSelect.innerHTML += `<option value="${i}">${i}</option>`;
             pdSelect.value = appData.settings.payday;
             document.getElementById('setting-advance').checked = appData.settings.paydayAdvance;
 
-            // Setup input form default date
             document.getElementById('input-date').value = new Date().toISOString().split('T')[0];
             
-            // Listeners for type toggle in Input
             document.querySelectorAll('input[name="tx_type"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     updateCategorySelect(e.target.value);
                     const slider = document.getElementById('toggle-slider');
-                    if(e.target.value === 'income') {
-                        slider.style.transform = 'translateX(200%)';
-                    } else if(e.target.value === 'saving') {
-                        slider.style.transform = 'translateX(100%)';
-                    } else {
-                        slider.style.transform = 'translateX(0)';
-                    }
+                    if(e.target.value === 'income') slider.style.transform = 'translateX(200%)';
+                    else if(e.target.value === 'saving') slider.style.transform = 'translateX(100%)';
+                    else slider.style.transform = 'translateX(0)';
                 });
             });
             updateCategorySelect('expense');
 
-            // Form submit listener
             document.getElementById('input-form').addEventListener('submit', handleAddTransaction);
-
-            // Month navigation
             document.getElementById('prev-month-btn').addEventListener('click', () => changeMonth(-1));
             document.getElementById('next-month-btn').addEventListener('click', () => changeMonth(1));
 
-            // Apply Theme
             applyTheme();
-
-            // Initial Render
             renderHome();
             renderCategorySettings();
         }
@@ -789,312 +695,223 @@
             homeHistoryMode = mode;
             const btnDaily = document.getElementById('hist-tab-daily');
             const btnCat = document.getElementById('hist-tab-category');
-            
             const activeClass = 'flex-1 py-1.5 text-xs font-bold bg-white shadow-sm rounded-lg text-primary transition-all';
             const inactiveClass = 'flex-1 py-1.5 text-xs font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600';
-            
             btnDaily.className = mode === 'daily' ? activeClass : inactiveClass;
             btnCat.className = mode === 'category' ? activeClass : inactiveClass;
-            
             renderHome();
         }
 
         function adjustAmount(val) {
             const input = document.getElementById('input-amount');
-            if (val === 0) {
-                input.value = '';
-            } else {
-                const current = parseInt(input.value) || 0;
-                input.value = current + val;
-            }
+            if (val === 0) input.value = '';
+            else input.value = (parseInt(input.value) || 0) + val;
         }
 
         function renderHome() {
             const payday = parseInt(appData.settings.payday);
             const period = getPeriod(currentDisplayDate, payday);
             
-            const dispMonthStr = `${period.start.getFullYear()}/${(period.start.getMonth() + 1).toString().padStart(2, '0')}`;
-            document.getElementById('current-month-display').textContent = dispMonthStr;
-
-            const pStartStr = `${period.start.getFullYear()}/${period.start.getMonth()+1}/${period.start.getDate()}`;
-            const pEndStr = `${period.end.getFullYear()}/${period.end.getMonth()+1}/${period.end.getDate()}`;
-            document.getElementById('period-display').textContent = `${pStartStr} 〜 ${pEndStr}`;
+            document.getElementById('current-month-display').textContent = `${period.start.getFullYear()}/${(period.start.getMonth() + 1).toString().padStart(2, '0')}`;
+            document.getElementById('period-display').textContent = `${period.start.getFullYear()}/${period.start.getMonth()+1}/${period.start.getDate()} 〜 ${period.end.getFullYear()}/${period.end.getMonth()+1}/${period.end.getDate()}`;
 
             const txs = getTransactionsForPeriod(period.start, period.end);
-            let income = 0, expense = 0, saving = 0;
+            let income = 0, expense = 0;
             const spentByCat = {};
 
             txs.forEach(tx => {
                 const isExpCat = appData.settings.categories.expense.some(c => c.id === tx.category);
+                const isSavCat = appData.settings.categories.saving.some(c => c.id === tx.category);
                 
                 if(tx.type === 'income') {
                     if (isExpCat) {
-                        // 支出カテゴリの返金/戻りは、出費からマイナスする
                         expense -= tx.amount;
                         spentByCat[tx.category] = (spentByCat[tx.category] || 0) - tx.amount;
-                    } else {
-                        income += tx.amount;
-                    }
+                    } else { income += tx.amount; }
                 } else if(tx.type === 'expense') {
-                    expense += tx.amount;
-                    spentByCat[tx.category] = (spentByCat[tx.category] || 0) + tx.amount;
-                } else if(tx.type === 'saving') {
-                    saving += tx.amount;
-                }
+                    if (!isSavCat) {
+                        expense += tx.amount;
+                        spentByCat[tx.category] = (spentByCat[tx.category] || 0) + tx.amount;
+                    }
+                } 
             });
 
-            // 天引きされる貯金目標合計 (月別予算から取得)
             const pKey = getPeriodKey(period.start);
             const bData = appData.budgets[pKey] || { income: 0, allocations: {}, savingTargets: {} };
             
             let totalSavingTarget = 0;
             Object.values(bData.savingTargets || {}).forEach(v => totalSavingTarget += v);
 
-            // ベース収入（給料など）を取得
-            const baseIncome = bData.income || 0;
-
-            const totalIncomeCalc = baseIncome + income;
+            const totalIncomeCalc = (bData.income || 0) + income;
             const available = totalIncomeCalc - totalSavingTarget - expense;
             
             const availEl = document.getElementById('available-amount');
             availEl.textContent = fmtCurr(available);
-            
-            if (available < 0) {
-                availEl.classList.remove('text-white');
-                availEl.classList.add('text-red-200'); 
-            } else {
-                availEl.classList.remove('text-red-200');
-                availEl.classList.add('text-white');
-            }
+            availEl.className = available < 0 ? 'text-4xl font-bold mb-6 tracking-tight font-num text-red-200' : 'text-4xl font-bold mb-6 tracking-tight font-num text-white';
 
             document.getElementById('total-income').textContent = fmtCurr(totalIncomeCalc);
             document.getElementById('total-expense').textContent = fmtCurr(expense);
-            document.getElementById('total-saving').textContent = fmtCurr(saving);
             
-            // --- Home Saving Progress ---
+            const savingBalances = {};
+            appData.transactions.forEach(tx => {
+                const isSavCat = appData.settings.categories.saving.some(c => c.id === tx.category);
+                if (isSavCat) {
+                    if (!savingBalances[tx.category]) savingBalances[tx.category] = 0;
+                    if (tx.type === 'saving') savingBalances[tx.category] += tx.amount;
+                    if (tx.type === 'expense') savingBalances[tx.category] -= tx.amount;
+                }
+            });
+
+            let totalDisplaySaving = 0;
             const homeSavingList = document.getElementById('home-saving-list');
             homeSavingList.innerHTML = '';
             let hasSavingTarget = false;
             
-            const spentSavingByCat = {};
-            txs.forEach(tx => {
-                if (tx.type === 'saving') {
-                    spentSavingByCat[tx.category] = (spentSavingByCat[tx.category] || 0) + tx.amount;
-                }
-            });
-
             appData.settings.categories.saving.forEach(cat => {
-                const target = (bData.savingTargets && bData.savingTargets[cat.id]) || 0;
-                const current = spentSavingByCat[cat.id] || 0;
-                
-                if (target > 0 || current > 0) {
+                if (cat.showInHome !== false) {
+                    totalDisplaySaving += (savingBalances[cat.id] || 0);
                     hasSavingTarget = true;
                     homeSavingList.innerHTML += `
                     <div class="flex justify-between items-center text-sm py-0.5">
-                        <div class="flex items-center">
-                            <span class="mr-2 opacity-90"><i class="fa-solid ${cat.icon} w-4 text-center mr-1"></i>${cat.name}</span>
-                        </div>
-                        <div class="font-num">
-                            <span class="font-bold">${fmtCurr(current)}</span>
-                            ${target > 0 ? `<span class="opacity-60 text-xs"> / ${fmtCurr(target)}</span>` : ''}
-                        </div>
-                    </div>
-                    `;
+                        <div class="flex items-center"><span class="mr-2 opacity-90"><i class="fa-solid ${cat.icon} w-4 text-center mr-1"></i>${cat.name}</span></div>
+                        <div class="font-num"><span class="font-bold">${fmtCurr(savingBalances[cat.id] || 0)}</span></div>
+                    </div>`;
                 }
             });
-            
-            if (!hasSavingTarget) {
-                homeSavingList.innerHTML = `<p class="text-xs opacity-70">貯金記録や目標がありません</p>`;
-            }
+            document.getElementById('total-saving').textContent = fmtCurr(totalDisplaySaving);
+            if (!hasSavingTarget) homeSavingList.innerHTML = `<p class="text-xs opacity-70">表示対象の貯金がありません</p>`;
 
-            // --- Home Budget Progress Bars ---
             const homeBudgetList = document.getElementById('home-budget-list');
             homeBudgetList.innerHTML = '';
             let hasBudget = false;
             
             appData.settings.categories.expense.forEach(cat => {
-                const allocated = bData.allocations[cat.id] || 0;
+                const allocated = (bData.allocations[cat.id] || 0) + ((bData.carryOvers && bData.carryOvers[cat.id]) || 0);
                 if (allocated > 0) {
                     hasBudget = true;
                     const spent = spentByCat[cat.id] || 0;
-                    const progress = Math.min(100, (spent / allocated) * 100);
                     const isOver = spent > allocated;
                     const remain = allocated - spent;
-                    const barColor = isOver ? 'bg-expense' : 'bg-primary';
-                    const textCls = isOver ? 'text-expense font-bold' : (remain > 0 ? 'text-gray-500' : 'text-gray-400');
-
+                    
                     homeBudgetList.innerHTML += `
                     <div class="bg-white rounded-xl p-3 shadow-sm border ${isOver ? 'border-red-100' : 'border-gray-100'} mb-2">
                         <div class="flex justify-between items-center mb-1.5">
                             <div class="flex items-center">
-                                <div class="w-5 h-5 rounded-md flex items-center justify-center mr-2" style="background-color: ${cat.bg}; color: ${cat.text}">
-                                    <i class="fa-solid ${cat.icon} text-[10px]"></i>
-                                </div>
+                                <div class="w-5 h-5 rounded-md flex items-center justify-center mr-2" style="background-color: ${cat.bg}; color: ${cat.text}"><i class="fa-solid ${cat.icon} text-[10px]"></i></div>
                                 <span class="text-xs font-bold text-gray-700">${cat.name}</span>
                             </div>
-                            <span class="text-[10px] font-num ${textCls}">${isOver ? '超過: ' : '残: '}¥${Math.abs(remain).toLocaleString()}</span>
+                            <span class="text-[10px] font-num ${isOver ? 'text-expense font-bold' : (remain > 0 ? 'text-gray-500' : 'text-gray-400')}">${isOver ? '超過: ' : '残: '}¥${Math.abs(remain).toLocaleString()}</span>
                         </div>
                         <div class="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
-                            <div class="${barColor} h-full rounded-full transition-all" style="width: ${progress}%"></div>
+                            <div class="${isOver ? 'bg-expense' : 'bg-primary'} h-full rounded-full transition-all" style="width: ${Math.min(100, (spent / allocated) * 100)}%"></div>
                         </div>
-                    </div>
-                    `;
+                    </div>`;
                 }
             });
-            if (!hasBudget) {
-                homeBudgetList.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">予算が設定されていません</p>`;
-            }
+            if (!hasBudget) homeBudgetList.innerHTML = `<p class="text-xs text-gray-400 text-center py-2">予算が設定されていません</p>`;
 
-
-            // --- Transaction List Rendering ---
             const listEl = document.getElementById('transaction-list');
-            const emptyEl = document.getElementById('empty-state');
-            
             document.getElementById('transaction-count').textContent = `${txs.length}件`;
             listEl.innerHTML = '';
 
             if (txs.length === 0) {
-                emptyEl.classList.remove('hidden');
-                emptyEl.classList.add('flex');
-                return;
+                document.getElementById('empty-state').classList.remove('hidden');
+                document.getElementById('empty-state').classList.add('flex');
             } else {
-                emptyEl.classList.add('hidden');
-                emptyEl.classList.remove('flex');
-            }
-            
-            if (homeHistoryMode === 'daily') {
-                // 日別表示 (そのままリスト)
-                txs.forEach(tx => {
-                    const cat = getCategoryDetails(tx.type, tx.category);
-                    const isExp = tx.type === 'expense';
-                    const isSav = tx.type === 'saving';
-                    const amountStr = (isExp || isSav ? '-' : '+') + fmtCurr(tx.amount);
-                    let amountColor = isExp ? 'text-red-500' : (isSav ? 'text-teal-500' : 'text-blue-500');
-                    
-                    listEl.innerHTML += `
-                        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between mb-2">
-                            <div class="flex items-center flex-1">
-                                <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" style="background-color: ${cat.bg}; color: ${cat.text}">
-                                    <i class="fa-solid ${cat.icon} text-lg"></i>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-baseline justify-between mb-0.5">
-                                        <h4 class="font-bold text-gray-800 text-sm truncate">${cat.name}</h4>
-                                        <span class="text-[10px] text-gray-400 font-num">${fmtDate(tx.date)}</span>
+                document.getElementById('empty-state').classList.add('hidden');
+                document.getElementById('empty-state').classList.remove('flex');
+                
+                if (homeHistoryMode === 'daily') {
+                    txs.forEach(tx => {
+                        const cat = getCategoryDetails(tx.type, tx.category);
+                        const isExp = tx.type === 'expense';
+                        const isSav = tx.type === 'saving';
+                        const amountColor = isExp ? 'text-red-500' : (isSav ? 'text-teal-500' : 'text-blue-500');
+                        
+                        listEl.innerHTML += `
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between mb-2">
+                                <div class="flex items-center flex-1">
+                                    <div class="w-12 h-12 rounded-xl flex items-center justify-center mr-4" style="background-color: ${cat.bg}; color: ${cat.text}"><i class="fa-solid ${cat.icon} text-lg"></i></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-baseline justify-between mb-0.5">
+                                            <h4 class="font-bold text-gray-800 text-sm truncate">${cat.name}</h4>
+                                            <span class="text-[10px] text-gray-400 font-num">${fmtDate(tx.date)}</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 truncate">${tx.note || 'メモなし'}</p>
                                     </div>
-                                    <p class="text-xs text-gray-500 truncate">${tx.note || 'メモなし'}</p>
                                 </div>
-                            </div>
-                            <div class="flex flex-col items-end ml-4 shrink-0">
-                                <span class="font-bold font-num text-sm ${amountColor}">${amountStr}</span>
-                                <div class="flex space-x-1 mt-1">
-                                    <button onclick="editTx('${tx.id}')" class="text-gray-300 hover:text-primary transition-colors px-1.5 py-1">
-                                        <i class="fa-solid fa-pen text-[10px]"></i>
-                                    </button>
-                                    <button onclick="reqDeleteTx('${tx.id}')" class="text-gray-300 hover:text-red-400 transition-colors px-1.5 py-1">
-                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
-                                    </button>
+                                <div class="flex flex-col items-end ml-4 shrink-0">
+                                    <span class="font-bold font-num text-sm ${amountColor}">${(isExp || isSav ? '-' : '+') + fmtCurr(tx.amount)}</span>
+                                    <div class="flex space-x-1 mt-1">
+                                        <button onclick="editTx('${tx.id}')" class="text-gray-300 hover:text-primary transition-colors px-1.5 py-1"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                        <button onclick="reqDeleteTx('${tx.id}')" class="text-gray-300 hover:text-red-400 transition-colors px-1.5 py-1"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    `;
-                });
-            } else {
-                // カテゴリ別表示
-                const grouped = {};
-                txs.forEach(tx => {
-                    const isExpCat = appData.settings.categories.expense.some(c => c.id === tx.category);
-                    const isSavCat = appData.settings.categories.saving.some(c => c.id === tx.category);
-                    
-                    let baseType = 'income';
-                    if (isExpCat) baseType = 'expense';
-                    if (isSavCat) baseType = 'saving';
-
-                    if(!grouped[tx.category]) grouped[tx.category] = { type: baseType, total: 0, items: [] };
-                    
-                    if (baseType === 'expense' && tx.type === 'income') {
-                        grouped[tx.category].total -= tx.amount; // 返金
-                    } else if (baseType === 'expense' && tx.type === 'expense') {
-                        grouped[tx.category].total += tx.amount;
-                    } else {
-                        grouped[tx.category].total += tx.amount;
-                    }
-                    
-                    grouped[tx.category].items.push(tx);
-                });
-
-                Object.keys(grouped).forEach(catId => {
-                    const g = grouped[catId];
-                    const cat = getCategoryDetails(g.type, catId);
-                    const isExpGrp = g.type === 'expense';
-                    const isSavGrp = g.type === 'saving';
-                    
-                    let totalStr = '';
-                    if (isExpGrp || isSavGrp) {
-                        totalStr = (g.total >= 0 ? '-' : '+') + fmtCurr(Math.abs(g.total));
-                    } else {
-                        totalStr = '+' + fmtCurr(g.total);
-                    }
-                    let totalColor = isExpGrp ? 'text-red-500' : (isSavGrp ? 'text-teal-500' : 'text-blue-500');
-
-                    let itemsHtml = '';
-                    g.items.forEach(tx => {
-                        const isTxExp = tx.type === 'expense';
-                        const isTxSav = tx.type === 'saving';
-                        const txAmountStr = (isTxExp || isTxSav ? '-' : '+') + fmtCurr(tx.amount);
-                        const txColor = isTxExp ? 'text-red-500' : (isTxSav ? 'text-teal-500' : 'text-blue-500');
-
-                        itemsHtml += `
-                            <div class="flex justify-between items-center py-2 border-t border-gray-50 mt-1">
-                                <div class="flex flex-col">
-                                    <span class="text-[10px] text-gray-400 font-num">${fmtDate(tx.date)}</span>
-                                    <span class="text-xs text-gray-600 truncate max-w-[120px]">${tx.note || 'メモなし'}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <span class="text-xs font-bold font-num ${txColor} mr-3">${txAmountStr}</span>
-                                    <button onclick="editTx('${tx.id}')" class="text-gray-300 hover:text-primary mr-2"><i class="fa-solid fa-pen text-[10px]"></i></button>
-                                    <button onclick="reqDeleteTx('${tx.id}')" class="text-gray-300 hover:text-red-400"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
-                                </div>
-                            </div>
-                        `;
+                            </div>`;
+                    });
+                } else {
+                    const grouped = {};
+                    txs.forEach(tx => {
+                        const isExpCat = appData.settings.categories.expense.some(c => c.id === tx.category);
+                        const isSavCat = appData.settings.categories.saving.some(c => c.id === tx.category);
+                        let baseType = isExpCat ? 'expense' : (isSavCat ? 'saving' : 'income');
+                        if(!grouped[tx.category]) grouped[tx.category] = { type: baseType, total: 0, items: [] };
+                        
+                        if (baseType === 'expense' && tx.type === 'income') grouped[tx.category].total -= tx.amount; 
+                        else grouped[tx.category].total += tx.amount;
+                        grouped[tx.category].items.push(tx);
                     });
 
-                    listEl.innerHTML += `
-                        <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center flex-1">
-                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}">
-                                        <i class="fa-solid ${cat.icon}"></i>
+                    Object.keys(grouped).forEach(catId => {
+                        const g = grouped[catId];
+                        const cat = getCategoryDetails(g.type, catId);
+                        const isExpGrp = g.type === 'expense';
+                        const isSavGrp = g.type === 'saving';
+                        
+                        let itemsHtml = '';
+                        g.items.forEach(tx => {
+                            const isTxExp = tx.type === 'expense';
+                            const isTxSav = tx.type === 'saving';
+                            itemsHtml += `
+                                <div class="flex justify-between items-center py-2 border-t border-gray-50 mt-1">
+                                    <div class="flex flex-col">
+                                        <span class="text-[10px] text-gray-400 font-num">${fmtDate(tx.date)}</span>
+                                        <span class="text-xs text-gray-600 truncate max-w-[120px]">${tx.note || 'メモなし'}</span>
                                     </div>
-                                    <h4 class="font-bold text-gray-800 text-sm">${cat.name} <span class="text-[10px] text-gray-400 font-normal ml-1">(${g.items.length}件)</span></h4>
+                                    <div class="flex items-center">
+                                        <span class="text-xs font-bold font-num ${isTxExp ? 'text-red-500' : (isTxSav ? 'text-teal-500' : 'text-blue-500')} mr-3">${(isTxExp || isTxSav ? '-' : '+') + fmtCurr(tx.amount)}</span>
+                                        <button onclick="editTx('${tx.id}')" class="text-gray-300 hover:text-primary mr-2"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                                        <button onclick="reqDeleteTx('${tx.id}')" class="text-gray-300 hover:text-red-400"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                                    </div>
+                                </div>`;
+                        });
+
+                        listEl.innerHTML += `
+                            <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center flex-1">
+                                        <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}"><i class="fa-solid ${cat.icon}"></i></div>
+                                        <h4 class="font-bold text-gray-800 text-sm">${cat.name} <span class="text-[10px] text-gray-400 font-normal ml-1">(${g.items.length}件)</span></h4>
+                                    </div>
+                                    <span class="font-bold font-num text-sm ${isExpGrp ? 'text-red-500' : (isSavGrp ? 'text-teal-500' : 'text-blue-500')}">${(isExpGrp || isSavGrp ? (g.total >= 0 ? '-' : '+') : '+') + fmtCurr(Math.abs(g.total))}</span>
                                 </div>
-                                <span class="font-bold font-num text-sm ${totalColor}">${totalStr}</span>
-                            </div>
-                            <div class="pl-13 pr-1">
-                                ${itemsHtml}
-                            </div>
-                        </div>
-                    `;
-                });
+                                <div class="pl-13 pr-1">${itemsHtml}</div>
+                            </div>`;
+                    });
+                }
             }
         }
 
-        // --- Budget Logic ---
         function renderBudget() {
             const period = getPeriod(currentDisplayDate, appData.settings.payday);
             const pKey = getPeriodKey(period.start);
             
-            if (!appData.budgets[pKey]) {
-                appData.budgets[pKey] = { income: 0, allocations: {}, savingTargets: {} };
-                saveData();
-            }
-            
+            if (!appData.budgets[pKey]) appData.budgets[pKey] = { income: 0, allocations: {}, savingTargets: {} };
             const bData = appData.budgets[pKey];
-            if(!bData.savingTargets) bData.savingTargets = {}; // fallback for older data
+            if(!bData.savingTargets) bData.savingTargets = {}; 
             
             document.getElementById('budget-income').value = bData.income || '';
 
-            // Calculate additional income & spent amounts
             const txs = getTransactionsForPeriod(period.start, period.end);
             const spentByCat = {};
             let otherIncome = 0;
@@ -1102,19 +919,14 @@
             txs.forEach(t => {
                 const isExpCat = appData.settings.categories.expense.some(c => c.id === t.category);
                 if (t.type === 'income') {
-                    if (isExpCat) {
-                        spentByCat[t.category] = (spentByCat[t.category] || 0) - t.amount;
-                    } else {
-                        otherIncome += t.amount;
-                    }
+                    if (isExpCat) spentByCat[t.category] = (spentByCat[t.category] || 0) - t.amount;
+                    else otherIncome += t.amount;
                 } else if (t.type === 'expense' || t.type === 'saving') {
                     spentByCat[t.category] = (spentByCat[t.category] || 0) + t.amount;
                 }
             });
-            
             document.getElementById('budget-other-income').textContent = fmtCurr(otherIncome);
 
-            // 月別天引き貯金合計とリスト生成
             let totalSavingTarget = 0;
             const savingTargetListEl = document.getElementById('budget-saving-targets');
             savingTargetListEl.innerHTML = '';
@@ -1122,128 +934,96 @@
             appData.settings.categories.saving.forEach(cat => {
                 const targetAmt = bData.savingTargets[cat.id] || 0;
                 totalSavingTarget += targetAmt;
-                
                 savingTargetListEl.innerHTML += `
                 <div class="flex items-center justify-between bg-white/60 p-2 rounded-lg border border-blue-50 group">
                     <div class="flex items-center flex-1">
-                        <span class="text-xs font-bold text-gray-600 flex items-center mr-2">
-                            <i class="fa-solid ${cat.icon} w-4 text-center mr-1" style="color: ${cat.text || '#60a5fa'}"></i> ${cat.name}
-                        </span>
+                        <span class="text-xs font-bold text-gray-600 flex items-center mr-2"><i class="fa-solid ${cat.icon} w-4 text-center mr-1" style="color: ${cat.text}"></i> ${cat.name}</span>
                         <div class="flex space-x-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                            <button onclick="openSavingModal('${cat.id}')" class="text-[10px] text-gray-400 hover:text-primary p-1" title="編集"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="reqDeleteSavingCat('${cat.id}')" class="text-[10px] text-gray-400 hover:text-red-400 p-1" title="削除"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="openSavingModal('${cat.id}')" class="text-[10px] text-gray-400 hover:text-primary p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="reqDeleteSavingCat('${cat.id}')" class="text-[10px] text-gray-400 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
                     <div class="relative w-24 shrink-0">
                         <span class="absolute inset-y-0 left-0 pl-1.5 flex items-center text-gray-400 text-[10px]">¥</span>
-                        <input type="number" onchange="updateBudgetSavingTarget('${cat.id}', this.value)" value="${targetAmt || ''}" class="w-full bg-white border border-gray-200 rounded-md py-1 pl-5 pr-1.5 text-right font-num font-bold text-xs focus:border-primary outline-none" placeholder="0">
+                        <input type="number" onchange="updateBudgetSavingTarget('${cat.id}', this.value)" value="${targetAmt || ''}" class="w-full bg-white border border-gray-200 rounded-md py-1 pl-5 pr-1.5 text-right font-num font-bold text-xs focus:border-primary outline-none">
                     </div>
-                </div>
-                `;
+                </div>`;
             });
-            
             document.getElementById('budget-saving-deduction').textContent = `- ${fmtCurr(totalSavingTarget)}`;
 
             let allocatedTotal = 0;
             const listEl = document.getElementById('budget-allocation-list');
-            listEl.innerHTML = '';
+            listEl.innerHTML = '<div class="text-xs font-bold text-gray-400 mb-2 mt-4"><i class="fa-solid fa-arrow-up mr-1"></i> 支出の振り分け</div>';
 
-            const renderAllocationItem = (cat, isSavingGroup) => {
-                const allocated = bData.allocations[cat.id] || 0;
-                allocatedTotal += allocated;
+            appData.settings.categories.expense.forEach(cat => {
+                const baseAllocated = bData.allocations[cat.id] || 0;
+                allocatedTotal += baseAllocated; 
+                
+                const carryOver = (bData.carryOvers && bData.carryOvers[cat.id]) || 0;
+                const allocated = baseAllocated + carryOver; 
                 const spent = spentByCat[cat.id] || 0;
-                const progress = allocated > 0 ? Math.min(100, (spent / allocated) * 100) : (spent > 0 ? 100 : 0);
                 const isOver = spent > allocated && allocated > 0;
                 const remaining = allocated - spent;
                 
-                const barColor = isOver ? 'bg-expense' : (isSavingGroup ? 'bg-blue-400' : 'bg-primary');
-                const remainColor = isOver ? 'text-expense font-bold' : (remaining > 0 ? 'text-primary' : 'text-gray-400');
-
                 listEl.innerHTML += `
                 <div class="bg-white p-4 rounded-2xl border ${isOver ? 'border-red-200 shadow-sm shadow-red-500/10' : 'border-gray-100 shadow-sm'} mb-2">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center flex-1">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}">
-                                <i class="fa-solid ${cat.icon}"></i>
+                        <div class="flex items-center flex-1 min-w-0">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center mr-3 shrink-0" style="background-color: ${cat.bg}; color: ${cat.text}"><i class="fa-solid ${cat.icon}"></i></div>
+                            <div class="flex items-center truncate mr-2">
+                                <span class="font-bold text-gray-700 text-sm truncate">${cat.name}</span>
+                                ${carryOver > 0 ? `<span class="text-[10px] text-primary bg-primary/10 px-1.5 py-0.5 rounded-md ml-2 border border-primary/20 shrink-0">繰越: ¥${carryOver.toLocaleString()}</span>` : ''}
                             </div>
-                            <span class="font-bold text-gray-700 text-sm truncate mr-2">${cat.name}</span>
                         </div>
                         <div class="relative w-28 shrink-0">
                             <span class="absolute inset-y-0 left-0 pl-2 flex items-center text-gray-400 text-xs">¥</span>
-                            <input type="number" onchange="updateAllocation('${cat.id}', this.value)" value="${allocated || ''}" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-1.5 pl-6 pr-2 text-right font-num font-bold text-sm focus:bg-white focus:border-primary outline-none placeholder:text-gray-300" placeholder="0">
+                            <input type="number" onchange="updateAllocation('${cat.id}', this.value)" value="${baseAllocated || ''}" class="w-full bg-gray-50 border border-gray-200 rounded-lg py-1.5 pl-6 pr-2 text-right font-num font-bold text-sm focus:bg-white focus:border-primary outline-none">
                         </div>
                     </div>
-                    
-                    <div class="flex justify-between text-[10px] mb-1.5 font-num font-medium">
+                    <div class="flex justify-between text-[10px] font-num font-medium">
                         <span class="text-gray-500">使用: ¥${spent.toLocaleString()}</span>
-                        <span class="${remainColor}">
-                            ${isOver ? '超過: ' : '残: '}¥${Math.abs(remaining).toLocaleString()}
-                        </span>
+                        <span class="${isOver ? 'text-expense font-bold' : (remaining > 0 ? 'text-primary' : 'text-gray-400')}">${isOver ? '超過: ' : '残: '}¥${Math.abs(remaining).toLocaleString()}</span>
                     </div>
-                </div>
-                `;
-            };
+                </div>`;
+            });
 
-            // 支出カテゴリの振り分けのみ表示（貯金は設定画面で天引きとして扱う）
-            listEl.innerHTML += `<div class="text-xs font-bold text-gray-400 mb-2 mt-4"><i class="fa-solid fa-arrow-up mr-1"></i> 支出の振り分け</div>`;
-            appData.settings.categories.expense.forEach(cat => renderAllocationItem(cat, false));
-
-            const incomeBase = bData.income || 0;
-            // 未振り分け ＝ (ベース収入 ＋ 追加収入) - 天引き貯金 - 振り分け済み合計
-            const remainingBase = (incomeBase + otherIncome) - totalSavingTarget - allocatedTotal;
-            document.getElementById('budget-remaining').textContent = fmtCurr(remainingBase);
+            document.getElementById('budget-remaining').textContent = fmtCurr(((bData.income || 0) + otherIncome) - totalSavingTarget - allocatedTotal);
             document.getElementById('budget-allocated-total').textContent = `振分済: ${fmtCurr(allocatedTotal)}`;
         }
 
         function updateBudgetIncome(val) {
-            const period = getPeriod(currentDisplayDate, appData.settings.payday);
-            const pKey = getPeriodKey(period.start);
+            const pKey = getPeriodKey(getPeriod(currentDisplayDate, appData.settings.payday).start);
             appData.budgets[pKey].income = parseInt(val) || 0;
-            saveData();
-            renderBudget();
+            saveData(); renderBudget();
         }
 
         function updateAllocation(catId, val) {
-            const period = getPeriod(currentDisplayDate, appData.settings.payday);
-            const pKey = getPeriodKey(period.start);
+            const pKey = getPeriodKey(getPeriod(currentDisplayDate, appData.settings.payday).start);
             appData.budgets[pKey].allocations[catId] = parseInt(val) || 0;
-            saveData();
-            renderBudget();
+            saveData(); renderBudget();
         }
 
         function updateBudgetSavingTarget(catId, val) {
-            const period = getPeriod(currentDisplayDate, appData.settings.payday);
-            const pKey = getPeriodKey(period.start);
+            const pKey = getPeriodKey(getPeriod(currentDisplayDate, appData.settings.payday).start);
             if(!appData.budgets[pKey].savingTargets) appData.budgets[pKey].savingTargets = {};
             appData.budgets[pKey].savingTargets[catId] = parseInt(val) || 0;
-            saveData();
-            renderBudget();
-            renderHome();
+            saveData(); renderBudget(); renderHome();
         }
 
-
-        // --- Category Management Logic ---
         function switchCatManageTab(type) {
-            currentCatManageType = type;
-            activeCategoryTab = type;
+            currentCatManageType = type; activeCategoryTab = type;
             const btnExp = document.getElementById('cat-tab-expense');
             const btnInc = document.getElementById('cat-tab-income');
-            
-            const activeBase = 'flex-1 py-2 text-sm font-bold bg-white shadow-sm rounded-lg transition-all ';
-            const inactiveClass = 'flex-1 py-2 text-sm font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600';
-            
-            btnExp.className = type === 'expense' ? activeBase + 'text-expense' : inactiveClass;
-            btnInc.className = type === 'income' ? activeBase + 'text-income' : inactiveClass;
-            
+            btnExp.className = type === 'expense' ? 'flex-1 py-2 text-sm font-bold bg-white shadow-sm rounded-lg text-expense transition-all' : 'flex-1 py-2 text-sm font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600';
+            btnInc.className = type === 'income' ? 'flex-1 py-2 text-sm font-bold bg-white shadow-sm rounded-lg text-income transition-all' : 'flex-1 py-2 text-sm font-bold text-gray-400 rounded-lg transition-all hover:text-gray-600';
             renderCategorySettings();
         }
 
         function renderSettings() {
             document.getElementById('setting-payday').value = appData.settings.payday;
             document.getElementById('setting-advance').checked = appData.settings.paydayAdvance;
-            
-            document.getElementById('theme-font').value = appData.settings.theme.fontFamily || '"Noto Sans JP", sans-serif';
-            document.getElementById('theme-text-color').value = appData.settings.theme.textColor || '#1f2937';
+            document.getElementById('theme-font').value = appData.settings.theme.fontFamily;
+            document.getElementById('theme-text-color').value = appData.settings.theme.textColor;
             document.getElementById('theme-app-bg').value = appData.settings.theme.appBg;
             document.getElementById('theme-card-start').value = appData.settings.theme.cardStart;
             document.getElementById('theme-card-end').value = appData.settings.theme.cardEnd;
@@ -1252,63 +1032,49 @@
         function renderCategorySettings() {
             const listEl = document.getElementById('settings-category-list');
             listEl.innerHTML = '';
-            
             appData.settings.categories[currentCatManageType].forEach(cat => {
                 listEl.innerHTML += `
                 <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-100 mb-2">
                     <div class="flex items-center flex-1">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}">
-                            <i class="fa-solid ${cat.icon} text-sm"></i>
-                        </div>
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3" style="background-color: ${cat.bg}; color: ${cat.text}"><i class="fa-solid ${cat.icon} text-sm"></i></div>
                         <span class="font-bold text-gray-700 text-sm">${cat.name}</span>
                     </div>
                     <div class="flex space-x-2">
-                        <button onclick="openCategoryModal('${cat.id}')" class="text-gray-400 hover:text-primary p-2 transition-colors">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button onclick="reqDeleteCategory('${cat.id}')" class="text-gray-400 hover:text-red-400 p-2 transition-colors">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        <button onclick="openCategoryModal('${cat.id}')" class="text-gray-400 hover:text-primary p-2 transition-colors"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="reqDeleteCategory('${cat.id}')" class="text-gray-400 hover:text-red-400 p-2 transition-colors"><i class="fa-solid fa-trash-can"></i></button>
                     </div>
-                </div>
-                `;
+                </div>`;
             });
-            updateCategorySelect('expense'); // refresh form dropdowns too
+            updateCategorySelect('expense'); 
         }
 
         function openCategoryModal(catId = null) {
-            const modal = document.getElementById('category-modal');
-            const content = document.getElementById('category-modal-content');
             document.getElementById('cat-modal-title').textContent = catId ? 'カテゴリを編集' : 'カテゴリを追加';
-            
-            let cat = { id: '', name: '', bg: '#f3f4f6', text: '#6b7280', icon: CAT_ICONS[0] };
+            let cat = { id: '', name: '', bg: '#f3f4f6', text: '#6b7280', icon: CAT_ICONS[0], showInHome: true };
             if (catId) {
                 cat = appData.settings.categories[currentCatManageType].find(c => c.id === catId);
-                // Fallback for old data
-                if (!cat.bg) cat.bg = '#f3f4f6';
-                if (!cat.text) cat.text = '#6b7280';
+                if (!cat.bg) cat.bg = '#f3f4f6'; if (!cat.text) cat.text = '#6b7280';
+                if (cat.showInHome === undefined) cat.showInHome = true;
             }
-            
             document.getElementById('cat-edit-id').value = cat.id;
             document.getElementById('cat-edit-name').value = cat.name;
             document.getElementById('cat-edit-bg').value = cat.bg;
             document.getElementById('cat-edit-text').value = cat.text;
             selectedCatIcon = cat.icon;
 
-            // Render icon picker
+            const isSaving = currentCatManageType === 'saving';
+            document.getElementById('cat-edit-show-home-container').style.display = isSaving ? 'block' : 'none';
+            if (isSaving) document.getElementById('cat-edit-show-home').checked = cat.showInHome !== false;
+
             const iconPicker = document.getElementById('cat-icon-picker');
             iconPicker.innerHTML = '';
             CAT_ICONS.forEach(ic => {
-                const active = selectedCatIcon === ic ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400 hover:bg-gray-200';
-                iconPicker.innerHTML += `<button onclick="selectCatIcon('${ic}', this)" class="w-10 h-10 rounded-xl flex items-center justify-center ${active} transition-all"><i class="fa-solid ${ic}"></i></button>`;
+                iconPicker.innerHTML += `<button onclick="selectCatIcon('${ic}', this)" class="w-10 h-10 rounded-xl flex items-center justify-center ${selectedCatIcon === ic ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400 hover:bg-gray-200'} transition-all"><i class="fa-solid ${ic}"></i></button>`;
             });
 
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                content.classList.remove('scale-95');
-            }, 10);
+            const modal = document.getElementById('category-modal');
+            modal.classList.remove('hidden'); modal.style.display = 'flex';
+            setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('category-modal-content').classList.remove('scale-95'); }, 10);
         }
 
         function openSavingModal(catId = null) {
@@ -1317,100 +1083,61 @@
             document.getElementById('cat-modal-title').textContent = catId ? '貯金目標を編集' : '貯金目標を追加';
         }
 
-        function selectCatColor(cls, btn) {
-            selectedCatColor = cls;
-            Array.from(document.getElementById('cat-color-picker').children).forEach(el => el.classList.remove('ring-2', 'ring-offset-2', 'ring-gray-400'));
-            btn.classList.add('ring-2', 'ring-offset-2', 'ring-gray-400');
-        }
-
         function selectCatIcon(ic, btn) {
             selectedCatIcon = ic;
             Array.from(document.getElementById('cat-icon-picker').children).forEach(el => {
-                el.classList.remove('bg-primary', 'text-white');
-                el.classList.add('bg-gray-100', 'text-gray-400');
+                el.classList.remove('bg-primary', 'text-white'); el.classList.add('bg-gray-100', 'text-gray-400');
             });
-            btn.classList.add('bg-primary', 'text-white');
-            btn.classList.remove('bg-gray-100', 'text-gray-400');
+            btn.classList.add('bg-primary', 'text-white'); btn.classList.remove('bg-gray-100', 'text-gray-400');
         }
 
         function saveCategory() {
             const id = document.getElementById('cat-edit-id').value;
             const name = document.getElementById('cat-edit-name').value.trim();
-            const bg = document.getElementById('cat-edit-bg').value;
-            const text = document.getElementById('cat-edit-text').value;
-            
-            if(!name) {
-                showToast('カテゴリ名を入力してください', 'error');
-                return;
-            }
+            if(!name) return showToast('カテゴリ名を入力してください', 'error');
 
             const list = appData.settings.categories[currentCatManageType];
+            const newCatData = { name, bg: document.getElementById('cat-edit-bg').value, text: document.getElementById('cat-edit-text').value, icon: selectedCatIcon };
+            if (currentCatManageType === 'saving') newCatData.showInHome = document.getElementById('cat-edit-show-home').checked;
+
             if (id) {
                 const idx = list.findIndex(c => c.id === id);
-                if (idx > -1) {
-                    list[idx] = { ...list[idx], name, bg, text, icon: selectedCatIcon };
-                }
+                if (idx > -1) list[idx] = { ...list[idx], ...newCatData };
             } else {
-                const newId = 'cat_' + Date.now().toString();
-                list.push({ id: newId, name, bg, text, icon: selectedCatIcon });
+                list.push({ id: 'cat_' + Date.now(), ...newCatData });
             }
 
             saveData();
-            
             if (currentCatManageType === 'saving') {
-                if(!document.getElementById('view-budget').classList.contains('hidden')) {
-                    renderBudget();
-                }
-                renderHome(); // 目標額が変更された場合に備えて更新
-            } else {
-                renderCategorySettings();
-            }
+                if(!document.getElementById('view-budget').classList.contains('hidden')) renderBudget();
+                renderHome();
+            } else renderCategorySettings();
 
-            closeCategoryModal();
-            showToast('保存しました');
+            closeCategoryModal(); showToast('保存しました');
         }
 
         function closeCategoryModal() {
             const modal = document.getElementById('category-modal');
-            const content = document.getElementById('category-modal-content');
-            modal.classList.add('opacity-0');
-            content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                modal.classList.add('hidden');
-                currentCatManageType = activeCategoryTab;
-            }, 300);
+            modal.classList.add('opacity-0'); document.getElementById('category-modal-content').classList.add('scale-95');
+            setTimeout(() => { modal.style.display = 'none'; modal.classList.add('hidden'); currentCatManageType = activeCategoryTab; }, 300);
         }
 
-        // --- Settlement (月末精算) Logic ---
         function openSettlementModal() {
             const period = getPeriod(currentDisplayDate, appData.settings.payday);
-            const pKey = getPeriodKey(period.start);
-            const bData = appData.budgets[pKey] || { allocations: {} };
-            const txs = getTransactionsForPeriod(period.start, period.end);
-            
+            const bData = appData.budgets[getPeriodKey(period.start)] || { allocations: {} };
             const spentByCat = {};
-            txs.forEach(t => {
-                if (t.type === 'expense') {
-                    spentByCat[t.category] = (spentByCat[t.category] || 0) + t.amount;
-                }
+            getTransactionsForPeriod(period.start, period.end).forEach(t => {
+                if (t.type === 'expense') spentByCat[t.category] = (spentByCat[t.category] || 0) + t.amount;
             });
 
             const listEl = document.getElementById('settlement-list');
-            listEl.innerHTML = '';
-            let hasRemaining = false;
+            listEl.innerHTML = ''; let hasRemaining = false;
 
-            // 貯金カテゴリの選択肢を生成
             let savingOptionsHtml = '';
-            appData.settings.categories.saving.forEach(scat => {
-                savingOptionsHtml += `<option value="save_${scat.id}">貯金に回す (${scat.name})</option>`;
-            });
+            appData.settings.categories.saving.forEach(scat => savingOptionsHtml += `<option value="save_${scat.id}">貯金に回す (${scat.name})</option>`);
 
             appData.settings.categories.expense.forEach(cat => {
-                const allocated = bData.allocations[cat.id] || 0;
-                const spent = spentByCat[cat.id] || 0;
-                const remaining = allocated - spent;
-                
+                const remaining = (bData.allocations[cat.id] || 0) - (spentByCat[cat.id] || 0);
                 if (remaining > 0) {
                     hasRemaining = true;
                     listEl.innerHTML += `
@@ -1420,68 +1147,35 @@
                             <span class="font-bold text-primary font-num text-sm">余り: ¥${remaining.toLocaleString()}</span>
                         </div>
                         <select class="settlement-action w-full bg-white border border-gray-200 rounded-lg py-2 px-2 text-xs font-bold text-gray-600 focus:outline-none focus:border-primary">
-                            <option value="carry" selected>翌月に繰り越す</option>
-                            ${savingOptionsHtml}
-                            <option value="none">何もしない (リセット)</option>
+                            <option value="carry" selected>翌月に繰り越す</option>${savingOptionsHtml}<option value="none">何もしない (リセット)</option>
                         </select>
-                    </div>
-                    `;
+                    </div>`;
                 }
             });
 
-            if (!hasRemaining) {
-                listEl.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-10 opacity-60">
-                    <i class="fa-solid fa-face-smile-beam text-4xl text-gray-300 mb-3"></i>
-                    <p class="text-sm text-gray-500 font-bold">余っている予算はありません</p>
-                </div>`;
-            }
+            if (!hasRemaining) listEl.innerHTML = `<div class="flex flex-col items-center justify-center py-10 opacity-60"><i class="fa-solid fa-face-smile-beam text-4xl text-gray-300 mb-3"></i><p class="text-sm text-gray-500 font-bold">余っている予算はありません</p></div>`;
 
             const modal = document.getElementById('settlement-modal');
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                document.getElementById('settlement-modal-content').classList.remove('scale-95');
-            }, 10);
+            modal.classList.remove('hidden'); modal.style.display = 'flex';
+            setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('settlement-modal-content').classList.remove('scale-95'); }, 10);
         }
 
         function closeSettlementModal() {
             const modal = document.getElementById('settlement-modal');
-            const content = document.getElementById('settlement-modal-content');
-            modal.classList.add('opacity-0');
-            content.classList.add('scale-95');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                modal.classList.add('hidden');
-            }, 300);
+            modal.classList.add('opacity-0'); document.getElementById('settlement-modal-content').classList.add('scale-95');
+            setTimeout(() => { modal.style.display = 'none'; modal.classList.add('hidden'); }, 300);
         }
 
         function executeSettlement() {
             const items = document.querySelectorAll('.settlement-item');
-            if (items.length === 0) {
-                closeSettlementModal();
-                return;
-            }
+            if (items.length === 0) return closeSettlementModal();
 
             const period = getPeriod(currentDisplayDate, appData.settings.payday);
+            const nextDate = new Date(period.start); nextDate.setMonth(nextDate.getMonth() + 1);
+            const nextPKey = getPeriodKey(getPeriod(nextDate, appData.settings.payday).start);
             
-            // 翌月の開始日とキーを取得
-            const nextDate = new Date(period.start);
-            nextDate.setMonth(nextDate.getMonth() + 1);
-            const nextPeriod = getPeriod(nextDate, appData.settings.payday);
-            const nextPKey = getPeriodKey(nextPeriod.start);
-            
-            if (!appData.budgets[nextPKey]) {
-                appData.budgets[nextPKey] = { income: 0, allocations: {} };
-            }
-
-            // 精算日付 (期間の最終日)
-            const endYear = period.end.getFullYear();
-            const endMonth = String(period.end.getMonth() + 1).padStart(2, '0');
-            const endDate = String(period.end.getDate()).padStart(2, '0');
-            const settlementDateStr = `${endYear}-${endMonth}-${endDate}`;
-
+            if (!appData.budgets[nextPKey]) appData.budgets[nextPKey] = { income: 0, allocations: {} };
+            const settlementDateStr = `${period.end.getFullYear()}-${String(period.end.getMonth() + 1).padStart(2, '0')}-${String(period.end.getDate()).padStart(2, '0')}`;
             const currentPKey = getPeriodKey(period.start);
 
             items.forEach(item => {
@@ -1490,46 +1184,24 @@
                 const action = item.querySelector('.settlement-action').value;
 
                 if (action === 'carry') {
-                    // 翌月の予算枠を増加
-                    const currentNextAlloc = appData.budgets[nextPKey].allocations[catId] || 0;
-                    appData.budgets[nextPKey].allocations[catId] = currentNextAlloc + amount;
-                } 
-                else if (action.startsWith('save_')) {
+                    if (!appData.budgets[nextPKey].carryOvers) appData.budgets[nextPKey].carryOvers = {};
+                    appData.budgets[nextPKey].carryOvers[catId] = (appData.budgets[nextPKey].carryOvers[catId] || 0) + amount;
+                } else if (action.startsWith('save_')) {
                     const targetSaveCatId = action.replace('save_', '');
-                    
-                    // 貯金記録を追加
-                    const tx = {
-                        id: 'tx_stl_' + Date.now().toString() + Math.floor(Math.random()*1000),
-                        type: 'saving', 
-                        date: settlementDateStr, 
-                        amount: amount, 
-                        category: targetSaveCatId, 
-                        note: '月末精算 (' + getCategoryDetails('expense', catId).name + 'の余り)'
-                    };
-                    appData.transactions.push(tx);
-                    
-                    // 今月の予算割り当てを支出から貯金へ移動 (UIの整合性のため)
+                    appData.transactions.push({ id: 'tx_stl_' + Date.now() + Math.floor(Math.random()*1000), type: 'saving', date: settlementDateStr, amount: amount, category: targetSaveCatId, note: '月末精算 (' + getCategoryDetails('expense', catId).name + 'の余り)' });
                     if(appData.budgets[currentPKey]) {
                          appData.budgets[currentPKey].allocations[catId] -= amount;
                          appData.budgets[currentPKey].allocations[targetSaveCatId] = (appData.budgets[currentPKey].allocations[targetSaveCatId] || 0) + amount;
                     }
                 }
             });
-
-            saveData();
-            closeSettlementModal();
-            showToast('残高の精算を完了しました', 'success');
-            renderBudget();
-            renderHome();
+            saveData(); closeSettlementModal(); showToast('残高の精算を完了しました'); renderBudget(); renderHome();
         }
 
         function changeMonth(offset) {
             currentDisplayDate.setMonth(currentDisplayDate.getMonth() + offset);
             renderHome();
-            // If in budget view, render it too
-            if(!document.getElementById('view-budget').classList.contains('hidden')) {
-                renderBudget();
-            }
+            if(!document.getElementById('view-budget').classList.contains('hidden')) renderBudget();
         }
 
         function updateCategorySelect(type) {
@@ -1538,31 +1210,26 @@
             
             if (type === 'income') {
                 select.innerHTML += `<optgroup label="収入カテゴリ">`;
-                appData.settings.categories['income'].forEach(cat => {
-                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-                });
+                appData.settings.categories['income'].forEach(cat => select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`);
+                select.innerHTML += `</optgroup><optgroup label="支出カテゴリ (返金・戻りなど)">`;
+                appData.settings.categories['expense'].forEach(cat => select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`);
                 select.innerHTML += `</optgroup>`;
-                
-                select.innerHTML += `<optgroup label="支出カテゴリ (返金・戻りなど)">`;
-                appData.settings.categories['expense'].forEach(cat => {
-                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-                });
+            } else if (type === 'expense') {
+                select.innerHTML += `<optgroup label="支出カテゴリ">`;
+                appData.settings.categories['expense'].forEach(cat => select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`);
+                select.innerHTML += `</optgroup><optgroup label="貯金カテゴリ (貯金からの出費)">`;
+                appData.settings.categories['saving'].forEach(cat => select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`);
                 select.innerHTML += `</optgroup>`;
             } else {
-                appData.settings.categories[type].forEach(cat => {
-                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-                });
+                appData.settings.categories[type].forEach(cat => select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`);
             }
         }
 
-        // --- Actions ---
         function editTx(id) {
             const tx = appData.transactions.find(t => t.id === id);
             if (!tx) return;
             
             document.getElementById('edit-tx-id').value = tx.id;
-            
-            // Set type
             document.getElementById(`type-${tx.type}`).checked = true;
             updateCategorySelect(tx.type);
             
@@ -1573,195 +1240,122 @@
 
             document.getElementById('input-date').value = tx.date;
             document.getElementById('input-amount').value = tx.amount;
-            document.getElementById('input-category').value = tx.category;
-            document.getElementById('input-note').value = tx.note || '';
+            
+            const catSelect = document.getElementById('input-category');
+            if (Array.from(catSelect.options).some(opt => opt.value === tx.category)) {
+                catSelect.value = tx.category; document.getElementById('input-note').value = tx.note || '';
+            } else {
+                catSelect.selectedIndex = 0; document.getElementById('input-note').value = tx.note || '';
+                setTimeout(() => showToast('削除されたカテゴリのため選び直してください', 'error'), 300);
+            }
             
             document.getElementById('input-view-title').innerHTML = '<i class="fa-solid fa-pen mr-2 text-primary"></i>記録を編集';
-            
             switchTab('input');
         }
 
         function handleAddTransaction(e) {
             e.preventDefault();
             const editId = document.getElementById('edit-tx-id').value;
-            const type = document.querySelector('input[name="tx_type"]:checked').value;
-            const date = document.getElementById('input-date').value;
             const amount = parseInt(document.getElementById('input-amount').value, 10);
-            const category = document.getElementById('input-category').value;
-            const note = document.getElementById('input-note').value;
+            if (!amount || amount <= 0) return showToast('正しい金額を入力してください', 'error');
 
-            if (!amount || amount <= 0) {
-                showToast('正しい金額を入力してください', 'error');
-                return;
-            }
+            const txData = {
+                type: document.querySelector('input[name="tx_type"]:checked').value,
+                date: document.getElementById('input-date').value,
+                amount,
+                category: document.getElementById('input-category').value,
+                note: document.getElementById('input-note').value
+            };
 
             if (editId) {
                 const idx = appData.transactions.findIndex(t => t.id === editId);
-                if (idx > -1) {
-                    appData.transactions[idx] = { ...appData.transactions[idx], type, date, amount, category, note };
-                    showToast('記録を更新しました', 'success');
-                }
-                document.getElementById('edit-tx-id').value = '';
-                document.getElementById('input-view-title').textContent = '記録を追加';
+                if (idx > -1) appData.transactions[idx] = { ...appData.transactions[idx], ...txData };
+                showToast('記録を更新しました');
             } else {
-                const tx = {
-                    id: 'tx_' + Date.now().toString() + Math.floor(Math.random()*1000),
-                    type, date, amount, category, note
-                };
-                appData.transactions.push(tx);
-                showToast('記録を追加しました', 'success');
+                appData.transactions.push({ id: 'tx_' + Date.now(), ...txData });
+                showToast('記録を追加しました');
             }
 
             saveData();
-            
-            document.getElementById('input-amount').value = '';
-            document.getElementById('input-note').value = '';
-            
+            document.getElementById('edit-tx-id').value = '';
+            document.getElementById('input-view-title').textContent = '記録を追加';
+            document.getElementById('input-amount').value = ''; document.getElementById('input-note').value = '';
             switchTab('home');
         }
 
         function saveSettings() {
-            const payday = document.getElementById('setting-payday').value;
-            appData.settings.payday = parseInt(payday) || 25;
+            appData.settings.payday = parseInt(document.getElementById('setting-payday').value) || 25;
             appData.settings.paydayAdvance = document.getElementById('setting-advance').checked;
-            
             appData.settings.theme = {
-                fontFamily: document.getElementById('theme-font').value,
-                textColor: document.getElementById('theme-text-color').value,
-                appBg: document.getElementById('theme-app-bg').value,
-                cardStart: document.getElementById('theme-card-start').value,
+                fontFamily: document.getElementById('theme-font').value, textColor: document.getElementById('theme-text-color').value,
+                appBg: document.getElementById('theme-app-bg').value, cardStart: document.getElementById('theme-card-start').value,
                 cardEnd: document.getElementById('theme-card-end').value
             };
-            
-            saveData();
-            applyTheme();
-            
-            showToast('設定を保存しました');
-            renderHome(); 
+            saveData(); applyTheme(); showToast('設定を保存しました'); renderHome(); 
         }
 
         function applyTheme() {
             const theme = appData.settings.theme;
             document.getElementById('app-container').style.backgroundColor = theme.appBg;
             document.getElementById('summary-card').style.background = `linear-gradient(to bottom right, ${theme.cardStart}, ${theme.cardEnd})`;
-            document.getElementById('summary-card').style.boxShadow = `0 20px 25px -5px ${theme.cardStart}40, 0 8px 10px -6px ${theme.cardStart}40`;
             
             let styleTag = document.getElementById('dynamic-theme-style');
             if(!styleTag) {
-                styleTag = document.createElement('style');
-                styleTag.id = 'dynamic-theme-style';
-                document.head.appendChild(styleTag);
+                styleTag = document.createElement('style'); styleTag.id = 'dynamic-theme-style'; document.head.appendChild(styleTag);
             }
             styleTag.innerHTML = `
-                body, .text-gray-800, .text-gray-700 {
-                    color: ${theme.textColor} !important;
-                }
-                body, input, select, button {
-                    font-family: ${theme.fontFamily} !important;
-                }
+                body, .text-gray-800, .text-gray-700 { color: ${theme.textColor} !important; }
+                body, input, select, button { font-family: ${theme.fontFamily} !important; }
             `;
         }
 
-        // --- Delete / Confirm Logic ---
-        let deleteTargetId = null;
-        let confirmActionType = null; 
+        let deleteTargetId = null; let confirmActionType = null; 
 
-        function reqDeleteTx(id) {
-            deleteTargetId = id;
-            confirmActionType = 'deleteTx';
-            openConfirm('データの削除', 'この記録を削除してもよろしいですか？');
-        }
-
-        function reqDeleteCategory(id) {
-            deleteTargetId = id;
-            confirmActionType = 'deleteCat';
-            openConfirm('カテゴリの削除', 'このカテゴリを削除してもよろしいですか？過去のデータに影響する場合があります。');
-        }
-
-        function reqDeleteSavingCat(id) {
-            deleteTargetId = id;
-            confirmActionType = 'deleteSavingCat';
-            openConfirm('貯金目標の削除', 'この目標を削除してもよろしいですか？過去のデータに影響する場合があります。');
-        }
-
-        function confirmReset() {
-            confirmActionType = 'resetAll';
-            openConfirm('全データの消去', 'すべての記録と設定が消去されます。元には戻せません。');
-        }
+        function reqDeleteTx(id) { deleteTargetId = id; confirmActionType = 'deleteTx'; openConfirm('データの削除', 'この記録を削除してもよろしいですか？'); }
+        function reqDeleteCategory(id) { deleteTargetId = id; confirmActionType = 'deleteCat'; openConfirm('カテゴリの削除', 'このカテゴリを削除してもよろしいですか？'); }
+        function reqDeleteSavingCat(id) { deleteTargetId = id; confirmActionType = 'deleteSavingCat'; openConfirm('貯金目標の削除', 'この目標を削除してもよろしいですか？'); }
+        function confirmReset() { confirmActionType = 'resetAll'; openConfirm('全データの消去', 'すべての記録と設定が消去されます。元には戻せません。'); }
 
         function executeConfirm() {
             if (confirmActionType === 'deleteTx') {
                 appData.transactions = appData.transactions.filter(tx => tx.id !== deleteTargetId);
-                saveData();
-                renderHome();
-                if(!document.getElementById('view-budget').classList.contains('hidden')) {
-                    renderBudget();
-                }
+                saveData(); renderHome(); if(!document.getElementById('view-budget').classList.contains('hidden')) renderBudget();
                 showToast('削除しました');
             } else if (confirmActionType === 'deleteCat') {
                 appData.settings.categories[currentCatManageType] = appData.settings.categories[currentCatManageType].filter(c => c.id !== deleteTargetId);
-                saveData();
-                renderCategorySettings();
-                showToast('カテゴリを削除しました');
+                saveData(); renderCategorySettings(); showToast('カテゴリを削除しました');
             } else if (confirmActionType === 'deleteSavingCat') {
                 appData.settings.categories.saving = appData.settings.categories.saving.filter(c => c.id !== deleteTargetId);
-                saveData();
-                if(!document.getElementById('view-budget').classList.contains('hidden')) {
-                    renderBudget();
-                }
-                renderHome();
-                showToast('貯金目標を削除しました');
+                saveData(); if(!document.getElementById('view-budget').classList.contains('hidden')) renderBudget();
+                renderHome(); showToast('貯金目標を削除しました');
             } else if (confirmActionType === 'resetAll') {
-                appData = JSON.parse(JSON.stringify(DEFAULT_DATA)); 
-                saveData();
-                initApp(); 
-                showToast('データを初期化しました');
-                switchTab('home');
+                appData = JSON.parse(JSON.stringify(DEFAULT_DATA)); saveData(); initApp(); showToast('データを初期化しました'); switchTab('home');
             }
             closeConfirm();
         }
 
-        // --- UI Helpers ---
         function switchTab(tabId) {
             if (tabId !== 'input') {
-                document.getElementById('edit-tx-id').value = '';
-                document.getElementById('input-view-title').textContent = '記録を追加';
-                document.getElementById('input-amount').value = '';
-                document.getElementById('input-note').value = '';
+                document.getElementById('edit-tx-id').value = ''; document.getElementById('input-view-title').textContent = '記録を追加';
+                document.getElementById('input-amount').value = ''; document.getElementById('input-note').value = '';
             }
 
-            document.querySelectorAll('.view-section').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('fade-in');
-            });
+            document.querySelectorAll('.view-section').forEach(el => { el.classList.add('hidden'); el.classList.remove('fade-in'); });
             const targetView = document.getElementById(`view-${tabId}`);
-            targetView.classList.remove('hidden');
-            void targetView.offsetWidth; 
-            targetView.classList.add('fade-in');
+            targetView.classList.remove('hidden'); void targetView.offsetWidth; targetView.classList.add('fade-in');
             
             document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('text-primary');
-                el.classList.add('text-gray-400');
-                
-                const icon = el.querySelector('i');
-                if(icon && !el.querySelector('.icon-wrapper')) {
-                    icon.style.transform = 'scale(1) translateY(0)';
-                }
+                el.classList.remove('text-primary'); el.classList.add('text-gray-400');
+                const icon = el.querySelector('i'); if(icon && !el.querySelector('.icon-wrapper')) icon.style.transform = 'scale(1) translateY(0)';
             });
             
             const activeTab = document.getElementById(`tab-${tabId}`);
-            activeTab.classList.add('text-primary');
-            activeTab.classList.remove('text-gray-400');
-            
-            const activeIcon = activeTab.querySelector('i');
-            if(activeIcon && !activeTab.querySelector('.icon-wrapper')) {
-                activeIcon.style.transform = 'scale(1.1) translateY(-2px)';
-            }
+            activeTab.classList.add('text-primary'); activeTab.classList.remove('text-gray-400');
+            const activeIcon = activeTab.querySelector('i'); if(activeIcon && !activeTab.querySelector('.icon-wrapper')) activeIcon.style.transform = 'scale(1.1) translateY(-2px)';
 
             if(tabId === 'home' || tabId === 'budget') {
                 document.getElementById('header-date-nav').style.display = 'flex';
-                if(tabId === 'home') renderHome(); 
-                if(tabId === 'budget') renderBudget(); 
+                if(tabId === 'home') renderHome(); if(tabId === 'budget') renderBudget(); 
             } else {
                 document.getElementById('header-date-nav').style.display = 'none';
                 if(tabId === 'settings') renderSettings();
@@ -1771,59 +1365,32 @@
         let toastTimeout;
         function showToast(msg, type = 'success') {
             const toast = document.getElementById('toast');
-            const icon = document.getElementById('toast-icon');
-            const msgEl = document.getElementById('toast-msg');
-            
-            if(type === 'error') {
-                icon.className = 'fa-solid fa-circle-exclamation text-expense';
-            } else {
-                icon.className = 'fa-solid fa-check-circle text-income';
-            }
-            msgEl.textContent = msg;
+            document.getElementById('toast-icon').className = type === 'error' ? 'fa-solid fa-circle-exclamation text-expense' : 'fa-solid fa-check-circle text-income';
+            document.getElementById('toast-msg').textContent = msg;
 
-            toast.classList.remove('hidden', 'toast-leave');
-            toast.style.display = 'flex';
-            toast.classList.add('toast-enter');
-
+            toast.classList.remove('hidden', 'toast-leave'); toast.style.display = 'flex'; toast.classList.add('toast-enter');
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => {
-                toast.classList.remove('toast-enter');
-                toast.classList.add('toast-leave');
-                setTimeout(() => {
-                    toast.style.display = 'none';
-                    toast.classList.add('hidden');
-                }, 400); 
+                toast.classList.remove('toast-enter'); toast.classList.add('toast-leave');
+                setTimeout(() => { toast.style.display = 'none'; toast.classList.add('hidden'); }, 400); 
             }, 2500);
         }
 
-        const modal = document.getElementById('confirm-modal');
-        const modalContent = document.getElementById('confirm-modal-content');
-        
         function openConfirm(title, msg) {
-            document.getElementById('confirm-title').textContent = title;
-            document.getElementById('confirm-msg').textContent = msg;
-            
-            modal.classList.remove('hidden');
-            modal.style.display = 'flex';
-            setTimeout(() => {
-                modal.classList.remove('opacity-0');
-                modalContent.classList.remove('scale-95');
-            }, 10);
-
+            document.getElementById('confirm-title').textContent = title; document.getElementById('confirm-msg').textContent = msg;
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.remove('hidden'); modal.style.display = 'flex';
+            setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('confirm-modal-content').classList.remove('scale-95'); }, 10);
             document.getElementById('confirm-action-btn').onclick = executeConfirm;
         }
 
         function closeConfirm() {
-            modal.classList.add('opacity-0');
-            modalContent.classList.add('scale-95');
-            setTimeout(() => {
-                modal.style.display = 'none';
-                modal.classList.add('hidden');
-            }, 300);
+            const modal = document.getElementById('confirm-modal');
+            modal.classList.add('opacity-0'); document.getElementById('confirm-modal-content').classList.add('scale-95');
+            setTimeout(() => { modal.style.display = 'none'; modal.classList.add('hidden'); }, 300);
         }
 
         window.onload = initApp;
-
     </script>
 </body>
 </html>
